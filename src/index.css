@@ -1,0 +1,412 @@
+/* CIPHER//VAULT — Anime Beach Sunset Design System */
+
+:root {
+  /* ── Core Background Palette ───────────────────────────────── */
+  --sunset-void:      #0d0520;   /* deep night indigo-purple */
+  --sunset-bg:        #100825;   /* page background */
+  --sunset-surface:   #180d35;   /* elevated surface */
+
+  /* ── Sky & Light Colors ────────────────────────────────────── */
+  --sunset-sky-top:   #0d0520;   /* zenith indigo */
+  --sunset-crimson:   #cc2200;   /* fiery mid-sky red */
+  --sunset-orange:    #e85c00;   /* vibrant sunset orange */
+  --sunset-gold:      #ffb800;   /* warm golden yellow */
+  --sunset-gold-bright: #ffd055; /* highlight gold */
+
+  /* ── Ocean & Environment ────────────────────────────────────── */
+  --sunset-ocean:     #0a3d62;   /* deep ocean blue */
+  --sunset-sand:      #c8885a;   /* warm sand */
+  --sunset-silhouette: #080415;  /* palm / mountain dark */
+
+  /* ── UI Card & Panel ───────────────────────────────────────── */
+  --sunset-card:      rgba(16, 8, 38, 0.85);
+  --sunset-card-hover: rgba(22, 12, 50, 0.92);
+
+  /* ── Borders ───────────────────────────────────────────────── */
+  --sunset-border:       rgba(255, 160, 50, 0.28);
+  --sunset-border-active: #ffb800;
+  --sunset-border-dim:   rgba(255, 140, 30, 0.14);
+
+  /* ── Glows ─────────────────────────────────────────────────── */
+  --sunset-gold-glow:   rgba(255, 184, 0, 0.38);
+  --sunset-gold-bg:     rgba(255, 184, 0, 0.09);
+  --sunset-orange-glow: rgba(232, 92, 0, 0.38);
+  --sunset-orange-bg:   rgba(232, 92, 0, 0.09);
+  --sunset-red-glow:    rgba(220, 40, 40, 0.4);
+  --sunset-red-bg:      rgba(220, 40, 40, 0.1);
+  --sunset-cyan:        #5ee7ff;
+  --sunset-cyan-glow:   rgba(94, 231, 255, 0.3);
+  --sunset-cyan-bg:     rgba(94, 231, 255, 0.08);
+
+  /* ── Text ──────────────────────────────────────────────────── */
+  --sunset-text:        #ffe8cc;   /* warm cream */
+  --sunset-text-muted:  #c4906a;   /* muted amber-tan */
+  --sunset-text-dim:    #7a5840;   /* dim brown */
+
+  /* ── Aliases (kept for components using old names) ─────────── */
+  --cyber-bg:            var(--sunset-bg);
+  --cyber-surface:       var(--sunset-surface);
+  --cyber-card:          var(--sunset-card);
+  --cyber-card-hover:    var(--sunset-card-hover);
+  --cyber-border:        var(--sunset-border);
+  --cyber-border-active: var(--sunset-border-active);
+  --cyber-border-dim:    var(--sunset-border-dim);
+  --cyber-green:         var(--sunset-gold);
+  --cyber-green-bright:  var(--sunset-gold-bright);
+  --cyber-green-dim:     #a07000;
+  --cyber-green-glow:    var(--sunset-gold-glow);
+  --cyber-green-bg:      var(--sunset-gold-bg);
+  --cyber-amber:         var(--sunset-orange);
+  --cyber-amber-glow:    var(--sunset-orange-glow);
+  --cyber-amber-bg:      var(--sunset-orange-bg);
+  --cyber-cyan:          var(--sunset-cyan);
+  --cyber-cyan-glow:     var(--sunset-cyan-glow);
+  --cyber-cyan-bg:       var(--sunset-cyan-bg);
+  --cyber-red:           #ff3344;
+  --cyber-red-glow:      var(--sunset-red-glow);
+  --cyber-red-bg:        var(--sunset-red-bg);
+  --cyber-text-main:     var(--sunset-text);
+  --cyber-text-muted:    var(--sunset-text-muted);
+  --cyber-text-dim:      var(--sunset-text-dim);
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --font-mono:    'JetBrains Mono', 'Share Tech Mono', ui-monospace, monospace;
+  --font-display: 'Orbitron', 'JetBrains Mono', monospace;
+
+  /* ── Transitions ────────────────────────────────────────────── */
+  --transition-fast:   0.15s ease;
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--sunset-bg);
+  color: var(--sunset-text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: radial-gradient(
+    ellipse at 30% 80%,
+    rgba(232, 92, 0, 0.07) 0%,
+    transparent 55%
+  ),
+  linear-gradient(180deg, #0d0520 0%, #100825 100%);
+}
+
+/* ── Custom Scrollbars ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(13, 5, 32, 0.9); }
+::-webkit-scrollbar-thumb {
+  background: var(--sunset-border);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sunset-gold);
+  box-shadow: 0 0 8px var(--sunset-gold-glow);
+}
+
+/* ── Typography ──────────────────────────────────────────────────── */
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.text-green  { color: var(--sunset-gold); }
+.text-amber  { color: var(--sunset-orange); }
+.text-cyan   { color: var(--sunset-cyan); }
+.text-red    { color: var(--cyber-red); }
+.text-muted  { color: var(--sunset-text-muted); }
+.text-dim    { color: var(--sunset-text-dim); }
+
+/* ── Sunset Buttons (primary style) ─────────────────────────────── */
+.cyber-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--sunset-gold-bg);
+  color: var(--sunset-gold);
+  border: 1px solid var(--sunset-border);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 8px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  outline: none;
+  user-select: none;
+  border-radius: 3px;
+}
+
+.cyber-btn:hover {
+  background: rgba(255, 184, 0, 0.16);
+  border-color: var(--sunset-gold);
+  box-shadow: 0 0 14px var(--sunset-gold-glow);
+  transform: translateY(-1px);
+}
+
+.cyber-btn:active { transform: translateY(0); }
+
+.cyber-btn-primary {
+  background: linear-gradient(135deg, var(--sunset-orange), var(--sunset-gold));
+  color: #0d0520;
+  border-color: var(--sunset-gold);
+  box-shadow: 0 0 18px var(--sunset-gold-glow);
+  font-weight: 700;
+}
+
+.cyber-btn-primary:hover {
+  background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-bright));
+  box-shadow: 0 0 28px var(--sunset-gold-glow);
+  color: #080210;
+}
+
+.cyber-btn-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--sunset-text);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.cyber-btn-secondary:hover {
+  background: rgba(255, 184, 0, 0.08);
+  border-color: var(--sunset-border);
+  box-shadow: 0 0 10px var(--sunset-gold-glow);
+  color: var(--sunset-gold);
+}
+
+.cyber-btn-danger {
+  background: var(--sunset-red-bg);
+  color: var(--cyber-red);
+  border-color: var(--cyber-red);
+}
+
+.cyber-btn-danger:hover {
+  background: rgba(220, 40, 40, 0.2);
+  box-shadow: 0 0 16px var(--sunset-red-glow);
+}
+
+.cyber-btn-amber {
+  background: var(--sunset-orange-bg);
+  color: var(--sunset-orange);
+  border-color: var(--sunset-orange);
+}
+
+.cyber-btn-amber:hover {
+  background: rgba(232, 92, 0, 0.2);
+  box-shadow: 0 0 16px var(--sunset-orange-glow);
+}
+
+.cyber-btn-icon {
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Form Inputs ─────────────────────────────────────────────────── */
+.cyber-input {
+  width: 100%;
+  background: rgba(13, 5, 32, 0.88);
+  border: 1px solid var(--sunset-border);
+  color: var(--sunset-text);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  padding: 10px 14px;
+  border-radius: 3px;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.cyber-input:focus {
+  border-color: var(--sunset-gold);
+  box-shadow: 0 0 14px var(--sunset-gold-glow);
+  background: rgba(16, 8, 38, 0.96);
+}
+
+.cyber-input::placeholder { color: var(--sunset-text-dim); }
+
+/* ── Cards & Panels ──────────────────────────────────────────────── */
+.cyber-card {
+  background: var(--sunset-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--sunset-border);
+  border-radius: 6px;
+  position: relative;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cyber-card-glow {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5),
+              inset 0 0 20px rgba(255, 160, 50, 0.04);
+}
+
+.cyber-card:hover { border-color: rgba(255, 184, 0, 0.42); }
+
+/* ── Corner Accents (warm gold) ──────────────────────────────────── */
+.cyber-corners::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 10px; height: 10px;
+  border-top: 2px solid var(--sunset-gold);
+  border-left: 2px solid var(--sunset-gold);
+  pointer-events: none;
+  border-radius: 3px 0 0 0;
+}
+
+.cyber-corners::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; right: -1px;
+  width: 10px; height: 10px;
+  border-bottom: 2px solid var(--sunset-gold);
+  border-right: 2px solid var(--sunset-gold);
+  pointer-events: none;
+  border-radius: 0 0 3px 0;
+}
+
+/* ── Status Badges ───────────────────────────────────────────────── */
+.cyber-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+
+.cyber-badge-green {
+  background: var(--sunset-gold-bg);
+  color: var(--sunset-gold);
+  border-color: var(--sunset-border);
+}
+
+.cyber-badge-amber {
+  background: var(--sunset-orange-bg);
+  color: var(--sunset-orange);
+  border-color: rgba(232, 92, 0, 0.4);
+}
+
+.cyber-badge-cyan {
+  background: var(--sunset-cyan-bg);
+  color: var(--sunset-cyan);
+  border-color: rgba(94, 231, 255, 0.35);
+}
+
+.cyber-badge-red {
+  background: var(--sunset-red-bg);
+  color: var(--cyber-red);
+  border-color: rgba(220, 40, 40, 0.4);
+}
+
+/* ── Pulse Dots ──────────────────────────────────────────────────── */
+.pulse-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background-color: var(--sunset-gold);
+  box-shadow: 0 0 8px var(--sunset-gold);
+  animation: pulse-glow 2s infinite;
+}
+
+.pulse-dot-red {
+  background-color: var(--cyber-red);
+  box-shadow: 0 0 8px var(--cyber-red);
+  animation: pulse-glow-red 1.2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.85); }
+}
+
+@keyframes pulse-glow-red {
+  0%, 100% { opacity: 1; transform: scale(1.1); }
+  50%       { opacity: 0.3; transform: scale(0.9); }
+}
+
+/* ── Warm Vignette Overlay (replaces CRT) ────────────────────────── */
+.crt-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(8, 4, 20, 0.55) 100%
+  );
+  opacity: 0.8;
+}
+
+.crt-active { opacity: 1; }
+
+/* ── Subtle float animation for logo/icons ───────────────────────── */
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-3px); }
+}
+
+.glitch-hover:hover {
+  animation: float-gentle 2s ease-in-out infinite;
+}
+
+/* ── Modal Backdrops ─────────────────────────────────────────────── */
+.cyber-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 4, 20, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Utility layout ──────────────────────────────────────────────── */
+.flex            { display: flex; }
+.flex-col        { display: flex; flex-direction: column; }
+.items-center    { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center  { justify-content: center; }
+.gap-2  { gap: 8px; }
+.gap-3  { gap: 12px; }
+.gap-4  { gap: 16px; }
+.gap-6  { gap: 24px; }
+.w-full { width: 100%; }

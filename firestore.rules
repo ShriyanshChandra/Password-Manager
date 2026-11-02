@@ -1,0 +1,68 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: vaults/{userId}
+// Document ID: Firebase Auth UID of the user
+// Fields:
+//   - version: number (required) - format version e.g. 1
+//   - salt: string (required, max 128 chars) - Base64 PBKDF2 salt
+//   - authHash: string (required, max 256 chars) - Base64 password auth verifier
+//   - iv: string (required, max 64 chars) - Base64 AES-GCM IV
+//   - ciphertext: string (required, max 5,000,000 chars) - AES-GCM 256 client-encrypted payload
+//   - hint: string (optional, max 200 chars) - user password hint
+//   - updatedAt: number (required) - timestamp in milliseconds
+//   - lastSyncedAt: number (optional) - timestamp in milliseconds
+//
+// Zero-Knowledge Architecture Guarantee:
+// Only ciphertext is ever saved in Firestore. Plaintext credentials never leave the client.
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidVaultBundle(data) {
+      return hasOnlyAllowedFields(['version', 'salt', 'authHash', 'iv', 'ciphertext', 'hint', 'updatedAt', 'lastSyncedAt']) &&
+             hasRequiredFields(['version', 'salt', 'authHash', 'iv', 'ciphertext', 'updatedAt']) &&
+             data.version is number &&
+             data.salt is string && data.salt.size() > 0 && data.salt.size() <= 128 &&
+             data.authHash is string && data.authHash.size() > 0 && data.authHash.size() <= 256 &&
+             data.iv is string && data.iv.size() > 0 && data.iv.size() <= 64 &&
+             data.ciphertext is string && data.ciphertext.size() > 0 && data.ciphertext.size() <= 5000000 &&
+             data.updatedAt is number &&
+             (!('hint' in data) || (data.hint is string && data.hint.size() <= 200)) &&
+             (!('lastSyncedAt' in data) || data.lastSyncedAt is number);
+    }
+
+    match /vaults/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidVaultBundle(request.resource.data);
+      allow update: if isOwner(userId) && isValidVaultBundle(request.resource.data);
+      allow delete: if isOwner(userId);
+    }
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
