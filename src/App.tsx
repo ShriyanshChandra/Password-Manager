@@ -4,7 +4,6 @@ import { UnlockScreen } from './components/UnlockScreen';
 import { VaultDashboard } from './components/VaultDashboard';
 import { PasswordGeneratorModal } from './components/PasswordGeneratorModal';
 import { SecurityAuditModal } from './components/SecurityAuditModal';
-import { FirebaseModal } from './components/FirebaseModal';
 import { ExtensionModal } from './components/ExtensionModal';
 import { ItemEditorModal } from './components/ItemEditorModal';
 import type { VaultItem, EncryptedVaultBundle } from './types/vault';
@@ -29,7 +28,6 @@ export const App: React.FC = () => {
   // Modals
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [isAuditOpen, setIsAuditOpen] = useState(false);
-  const [isFirebaseOpen, setIsFirebaseOpen] = useState(false);
   const [isExtensionOpen, setIsExtensionOpen] = useState(false);
   const [isItemEditorOpen, setIsItemEditorOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<VaultItem | null>(null);
@@ -109,8 +107,8 @@ export const App: React.FC = () => {
     }
 
     if (!bundle) {
-      // First sign-in for this user, initialize vault with demo/starter items
-      const initResult = await vaultStorage.initializeVault(masterPassword, undefined, true);
+      // First sign-in for this user, initialize vault with clean items
+      const initResult = await vaultStorage.initializeVault(masterPassword, undefined, false);
       setMasterKey(initResult.masterKey);
       setVaultBundle(initResult.bundle);
       setItems(initResult.items);
@@ -123,19 +121,6 @@ export const App: React.FC = () => {
     setMasterKey(key);
     setVaultBundle(bundle);
     setItems(decryptedItems);
-    setIsLocked(false);
-  };
-
-  // Sign Up with Email & Master Password
-  const handleSignUp = async (email: string, masterPassword: string, hint?: string) => {
-    // 1. Create account in Firebase Auth
-    await firebaseService.signUpWithEmail(email, masterPassword);
-
-    // 2. Client-side initialize zero-knowledge vault and save encrypted bundle to Firestore
-    const initResult = await vaultStorage.initializeVault(masterPassword, hint, true);
-    setMasterKey(initResult.masterKey);
-    setVaultBundle(initResult.bundle);
-    setItems(initResult.items);
     setIsLocked(false);
   };
 
@@ -217,7 +202,6 @@ export const App: React.FC = () => {
         onLockVault={handleLockVault}
         onOpenGenerator={() => setIsGeneratorOpen(true)}
         onOpenAudit={() => setIsAuditOpen(true)}
-        onOpenFirebase={() => setIsFirebaseOpen(true)}
         onOpenExtension={() => setIsExtensionOpen(true)}
         isFirebaseConnected={isFirebaseConnected}
         autoLockSeconds={autoLockSeconds}
@@ -230,10 +214,7 @@ export const App: React.FC = () => {
 
       {/* Main Viewport */}
       {isLocked ? (
-        <UnlockScreen
-          onSignIn={handleSignIn}
-          onSignUp={handleSignUp}
-        />
+        <UnlockScreen onSignIn={handleSignIn} />
       ) : (
         <VaultDashboard
           items={items}
@@ -273,15 +254,6 @@ export const App: React.FC = () => {
         onSelectItem={(item) => {
           setEditingItem(item);
           setIsItemEditorOpen(true);
-        }}
-      />
-
-      {/* Firebase Settings Modal */}
-      <FirebaseModal
-        isOpen={isFirebaseOpen}
-        onClose={() => setIsFirebaseOpen(false)}
-        onConfigChanged={() => {
-          setIsFirebaseConnected(firebaseService.getStatus().isConfigured);
         }}
       />
 

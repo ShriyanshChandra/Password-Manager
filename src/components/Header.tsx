@@ -9,7 +9,6 @@ import {
   KeyRound,
   ShieldAlert,
   Puzzle,
-  Settings,
 } from 'lucide-react';
 import { cyberAudio } from '../utils/cyberAudio';
 
@@ -18,7 +17,6 @@ interface HeaderProps {
   onLockVault: () => void;
   onOpenGenerator: () => void;
   onOpenAudit: () => void;
-  onOpenFirebase: () => void;
   onOpenExtension: () => void;
   isFirebaseConnected: boolean;
   autoLockSeconds: number;
@@ -34,7 +32,6 @@ export const Header: React.FC<HeaderProps> = ({
   onLockVault,
   onOpenGenerator,
   onOpenAudit,
-  onOpenFirebase,
   onOpenExtension,
   isFirebaseConnected,
   autoLockSeconds,
@@ -121,23 +118,18 @@ export const Header: React.FC<HeaderProps> = ({
       {!isLocked && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           {/* Cloud Sync Status */}
-          <button
-            onClick={() => {
-              cyberAudio.playKeypress();
-              onOpenFirebase();
-            }}
+          <div
             className="cyber-badge"
             style={{
               background: isFirebaseConnected ? 'var(--cyber-cyan-bg)' : 'rgba(255, 255, 255, 0.05)',
               color: isFirebaseConnected ? 'var(--cyber-cyan)' : 'var(--cyber-text-muted)',
               borderColor: isFirebaseConnected ? 'var(--cyber-cyan)' : 'var(--cyber-border-dim)',
-              cursor: 'pointer',
             }}
-            title="Configure Firebase Cloud Sync"
+            title={isFirebaseConnected ? 'Firebase Cloud Sync Connected' : 'Running in Local Storage Mode'}
           >
             <Cloud size={13} />
             <span>{isFirebaseConnected ? 'CLOUD: SYNCED' : 'LOCAL: OFFLINE'}</span>
-          </button>
+          </div>
 
           {/* Auto Lock Countdown */}
           <div
@@ -199,18 +191,6 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Puzzle size={14} color="var(--cyber-cyan)" />
           <span style={{ display: 'none', sm: 'inline' } as React.CSSProperties}>EXTENSION</span>
-        </button>
-
-        {/* Firebase Config */}
-        <button
-          onClick={() => {
-            cyberAudio.playKeypress();
-            onOpenFirebase();
-          }}
-          className="cyber-btn cyber-btn-secondary cyber-btn-icon"
-          title="Settings & Firebase Connection"
-        >
-          <Settings size={15} />
         </button>
 
         {/* CRT Scanline Toggle */}

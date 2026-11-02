@@ -14,12 +14,12 @@ import type { EncryptedVaultBundle, FirebaseConnectionConfig } from '../types/va
 const FIREBASE_CONFIG_KEY = 'cipher_firebase_custom_config';
 
 const DEFAULT_FIREBASE_CONFIG: FirebaseConnectionConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyCHqpIXjVQh7uHZUxGRHIIzSLQa9V4kqak',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'password-manager-3d385.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'password-manager-3d385',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'password-manager-3d385.firebasestorage.app',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '17985720951',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:17985720951:web:adf4277cf3b203d813ac72',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
 };
 
 export class FirebaseService {

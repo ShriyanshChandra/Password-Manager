@@ -10,78 +10,7 @@ import { firebaseService } from './firebaseService';
 
 const LOCAL_STORAGE_KEY = 'cipher_matrix_vault_bundle';
 
-const INITIAL_DEMO_ITEMS: VaultItem[] = [
-  {
-    id: 'item-demo-github',
-    title: 'GitHub Core Enterprise',
-    category: 'login',
-    username: 'neo_matrix_agent',
-    password: 'k#9X!pQ7$wM2@zL8&vR4',
-    url: 'https://github.com/login',
-    notes: 'SSH Key deployed to staging cluster. 2FA hardware key backup configured.',
-    totpSecret: 'JBSWY3DPEHPK3PXP', // Standard TOTP test secret
-    tags: ['dev', 'git', 'infrastructure'],
-    favorite: true,
-    createdAt: Date.now() - 86400000 * 5,
-    updatedAt: Date.now() - 86400000 * 1,
-  },
-  {
-    id: 'item-demo-proton',
-    title: 'ProtonMail Encrypted Comms',
-    category: 'login',
-    username: 'agent_zero@pm.me',
-    password: 'G7$z*P3!qW9#yK2^mX5~',
-    url: 'https://mail.proton.me',
-    notes: 'End-to-end PGP email account for critical security alerts.',
-    totpSecret: 'HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ',
-    tags: ['email', 'privacy', 'pgp'],
-    favorite: true,
-    createdAt: Date.now() - 86400000 * 12,
-    updatedAt: Date.now() - 86400000 * 3,
-  },
-  {
-    id: 'item-demo-aws',
-    title: 'AWS GovCloud Production',
-    category: 'api_key',
-    username: 'AKIAIOSFODNN7EXAMPLE',
-    password: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-    url: 'https://console.aws.amazon.com',
-    notes: 'Primary terraform deployer IAM credentials with S3 & Lambda policies.',
-    tags: ['cloud', 'aws', 'devops'],
-    favorite: false,
-    createdAt: Date.now() - 86400000 * 20,
-    updatedAt: Date.now() - 86400000 * 6,
-  },
-  {
-    id: 'item-demo-card',
-    title: 'Quantum Black Metal Card',
-    category: 'card',
-    cardHolder: 'CIPHER PROTOCOL',
-    cardNumber: '4532 •••• •••• 8842',
-    cardExpiry: '08/30',
-    cardCvv: '792',
-    notes: 'Corporate server billing virtual card with $10k limit.',
-    tags: ['finance', 'billing'],
-    favorite: true,
-    createdAt: Date.now() - 86400000 * 30,
-    updatedAt: Date.now() - 86400000 * 10,
-  },
-  {
-    id: 'item-demo-note',
-    title: 'Server Root Emergency Recovery Key',
-    category: 'note',
-    notes: `-----BEGIN MATRIX EMERGENCY RECOVERY SEED-----
-whisper horizon dynamic cyber vault matrix quantum vector
-protocol 0x994FA2 beacon router circuit firewall pulse 2026
------END MATRIX EMERGENCY RECOVERY SEED-----
-
-Location: Geographically distributed cold storage vault B-7.`,
-    tags: ['recovery', 'security', 'critical'],
-    favorite: false,
-    createdAt: Date.now() - 86400000 * 45,
-    updatedAt: Date.now() - 86400000 * 15,
-  },
-];
+const INITIAL_DEMO_ITEMS: VaultItem[] = [];
 
 export class VaultStorageService {
   // Check if vault has been initialized
