@@ -167,7 +167,7 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
         flexDirection: 'column',
         height: 'calc(100vh - 65px)',
         overflow: 'hidden',
-        background: 'rgba(5, 8, 12, 0.75)',
+        background: 'rgba(238, 248, 255, 0.25)',
       }}
     >
       <input
@@ -193,8 +193,10 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
         {/* ========================================================= */}
         <aside
           style={{
-            borderRight: '1px solid var(--cyber-border)',
-            background: 'rgba(7, 12, 16, 0.85)',
+            borderRight: '1px solid rgba(14, 165, 233, 0.16)',
+            background: 'rgba(255, 255, 255, 0.82)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -407,9 +409,9 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                       }}
                       className="cyber-badge"
                       style={{
-                        background: selectedTag === t ? 'var(--cyber-green)' : 'rgba(255,255,255,0.04)',
-                        color: selectedTag === t ? '#000' : 'var(--cyber-text-muted)',
-                        borderColor: selectedTag === t ? 'var(--cyber-green)' : 'var(--cyber-border-dim)',
+                        background: selectedTag === t ? 'var(--cyber-green)' : 'rgba(14, 165, 233, 0.08)',
+                        color: selectedTag === t ? '#fff' : 'var(--cyber-text-muted)',
+                        borderColor: selectedTag === t ? 'var(--cyber-green)' : 'rgba(14, 165, 233, 0.2)',
                         cursor: 'pointer',
                         fontSize: '10.5px',
                       }}
@@ -479,8 +481,10 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
         {/* ========================================================= */}
         <section
           style={{
-            borderRight: '1px solid var(--cyber-border)',
-            background: 'rgba(8, 13, 18, 0.65)',
+            borderRight: '1px solid rgba(14, 165, 233, 0.16)',
+            background: 'rgba(255, 255, 255, 0.68)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -539,9 +543,10 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                       style={{
                         padding: '12px',
                         cursor: 'pointer',
-                        borderColor: isSelected ? 'var(--cyber-green)' : 'var(--cyber-border-dim)',
-                        background: isSelected ? 'rgba(0, 255, 102, 0.08)' : 'rgba(10, 16, 22, 0.6)',
-                        boxShadow: isSelected ? '0 0 12px var(--cyber-green-glow)' : 'none',
+                        borderColor: isSelected ? 'var(--anime-sky)' : 'rgba(14, 165, 233, 0.16)',
+                        background: isSelected ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.72)',
+                        boxShadow: isSelected ? '0 4px 16px rgba(2, 132, 199, 0.15)' : 'none',
+                        borderRadius: '12px',
                         transition: 'all 0.15s ease',
                       }}
                     >
@@ -554,8 +559,9 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              background: 'rgba(255, 255, 255, 0.04)',
-                              border: '1px solid var(--cyber-border-dim)',
+                              background: 'rgba(14, 165, 233, 0.08)',
+                              border: '1px solid rgba(14, 165, 233, 0.18)',
+                              borderRadius: '6px',
                             }}
                           >
                             {getCategoryIcon(item.category)}
@@ -598,7 +604,7 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                           justifyContent: 'space-between',
                           marginTop: '8px',
                           paddingTop: '6px',
-                          borderTop: '1px solid rgba(255,255,255,0.04)',
+                          borderTop: '1px solid rgba(14, 165, 233, 0.12)',
                           fontSize: '10px',
                         }}
                       >
@@ -662,7 +668,9 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
         {/* ========================================================= */}
         <main
           style={{
-            background: 'rgba(9, 14, 18, 0.95)',
+            background: 'rgba(255, 255, 255, 0.82)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             display: 'flex',
             flexDirection: 'column',
             overflowY: 'auto',
@@ -690,8 +698,9 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      border: '1px solid var(--cyber-green)',
-                      background: 'var(--cyber-green-bg)',
+                      border: '1px solid rgba(14, 165, 233, 0.22)',
+                      background: 'rgba(14, 165, 233, 0.08)',
+                      borderRadius: '10px',
                     }}
                   >
                     {getCategoryIcon(selectedItem.category)}
@@ -806,11 +815,11 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                         fontSize: '16px',
                         fontFamily: 'var(--font-mono)',
                         letterSpacing: showItemPassword ? 'normal' : '0.25em',
-                        color: 'var(--cyber-green)',
-                        background: 'rgba(0,0,0,0.3)',
+                        color: 'var(--anime-turquoise)',
+                        background: 'rgba(13, 148, 136, 0.07)',
                         padding: '10px 14px',
-                        border: '1px solid var(--cyber-border-dim)',
-                        borderRadius: '2px',
+                        border: '1px solid rgba(13, 148, 136, 0.2)',
+                        borderRadius: '8px',
                       }}
                     >
                       {showItemPassword ? selectedItem.password : '••••••••••••••••••••'}
@@ -839,8 +848,9 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                     className="cyber-card"
                     style={{
                       padding: '16px',
-                      background: 'rgba(0, 229, 255, 0.04)',
-                      borderColor: 'rgba(0, 229, 255, 0.3)',
+                      background: 'rgba(2, 132, 199, 0.07)',
+                      borderColor: 'rgba(2, 132, 199, 0.25)',
+                      borderRadius: '12px',
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>

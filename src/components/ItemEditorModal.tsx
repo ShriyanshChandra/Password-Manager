@@ -139,14 +139,18 @@ export const ItemEditorModal: React.FC<ItemEditorModalProps> = ({
   return (
     <div className="cyber-modal-backdrop">
       <div
-        className="cyber-card cyber-corners cyber-card-glow"
+        className="cyber-card cyber-corners"
         style={{
           width: '100%',
           maxWidth: '620px',
           maxHeight: '92vh',
           display: 'flex',
           flexDirection: 'column',
-          background: 'rgba(9, 15, 20, 0.96)',
+          background: 'rgba(255, 255, 255, 0.93)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(14, 165, 233, 0.22)',
+          boxShadow: '0 20px 60px -8px rgba(14, 116, 144, 0.22), 0 4px 16px rgba(0,0,0,0.06)',
           padding: '24px',
           overflow: 'hidden',
         }}

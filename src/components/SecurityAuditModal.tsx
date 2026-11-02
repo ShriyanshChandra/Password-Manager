@@ -30,14 +30,18 @@ export const SecurityAuditModal: React.FC<SecurityAuditModalProps> = ({
   return (
     <div className="cyber-modal-backdrop">
       <div
-        className="cyber-card cyber-corners cyber-card-glow"
+        className="cyber-card cyber-corners"
         style={{
           width: '100%',
           maxWidth: '680px',
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
-          background: 'rgba(9, 15, 20, 0.96)',
+          background: 'rgba(255, 255, 255, 0.93)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(14, 165, 233, 0.22)',
+          boxShadow: '0 20px 60px -8px rgba(14, 116, 144, 0.22), 0 4px 16px rgba(0,0,0,0.06)',
           padding: '24px',
           overflow: 'hidden',
         }}
@@ -70,8 +74,9 @@ export const SecurityAuditModal: React.FC<SecurityAuditModalProps> = ({
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '20px',
-              background: 'rgba(5, 8, 12, 0.9)',
-              border: '1px solid var(--cyber-border)',
+              background: 'rgba(14, 165, 233, 0.06)',
+              border: '1px solid rgba(14, 165, 233, 0.2)',
+              borderRadius: '10px',
               marginBottom: '20px',
             }}
           >
@@ -144,9 +149,10 @@ export const SecurityAuditModal: React.FC<SecurityAuditModalProps> = ({
                   <div
                     key={idx}
                     style={{
-                      background: 'rgba(255, 176, 0, 0.05)',
-                      border: '1px solid rgba(255, 176, 0, 0.25)',
+                      background: 'rgba(217, 119, 6, 0.07)',
+                      border: '1px solid rgba(217, 119, 6, 0.25)',
                       padding: '12px',
+                      borderRadius: '8px',
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -213,8 +219,9 @@ export const SecurityAuditModal: React.FC<SecurityAuditModalProps> = ({
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         padding: '10px 14px',
-                        background: 'rgba(255, 51, 85, 0.05)',
-                        border: '1px solid rgba(255, 51, 85, 0.2)',
+                        background: 'rgba(225, 29, 72, 0.06)',
+                        border: '1px solid rgba(225, 29, 72, 0.2)',
+                        borderRadius: '8px',
                       }}
                     >
                       <div>
@@ -250,8 +257,9 @@ export const SecurityAuditModal: React.FC<SecurityAuditModalProps> = ({
               style={{
                 textAlign: 'center',
                 padding: '40px 20px',
-                background: 'rgba(0, 255, 102, 0.04)',
-                border: '1px solid var(--cyber-border)',
+                background: 'rgba(13, 148, 136, 0.06)',
+                border: '1px solid rgba(13, 148, 136, 0.2)',
+                borderRadius: '12px',
               }}
             >
               <ShieldCheck size={48} color="var(--cyber-green)" style={{ marginBottom: '12px' }} />

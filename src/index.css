@@ -1,81 +1,111 @@
-/* CIPHER//VAULT — Anime Beach Sunset Design System */
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
+
+/* ==========================================================================
+   CIPHER//VAULT — Living Anime Beach Landscape Design System
+   Inspired by Studio Ghibli summer coastal landscapes & environmental harmony
+   ========================================================================== */
 
 :root {
-  /* ── Core Background Palette ───────────────────────────────── */
-  --sunset-void:      #0d0520;   /* deep night indigo-purple */
-  --sunset-bg:        #100825;   /* page background */
-  --sunset-surface:   #180d35;   /* elevated surface */
+  /* ── Living Anime Beach Palette ─────────────────────────────────────────── */
+  --anime-sky:              #0284c7;   /* deep summer cerulean */
+  --anime-sky-mid:          #38bdf8;   /* bright azure */
+  --anime-sky-light:        #e0f2fe;   /* horizon pale cyan */
+  --anime-ocean-deep:       #0369a1;   /* deep offshore sapphire */
+  --anime-ocean-mid:        #0ea5e9;   /* cerulean mid-waters */
+  --anime-turquoise:        #0d9488;   /* coastal turquoise */
+  --anime-sea-foam:         #f0fdfa;   /* surf lace white */
+  --anime-sand:             #fef3c7;   /* warm golden sand */
+  --anime-sand-warm:        #fde68a;   /* sunlit sand */
+  --anime-leaf-dark:        #15803d;   /* lush forest green */
+  --anime-leaf-green:       #16a34a;   /* vibrant anime tree green */
+  --anime-leaf-bright:      #22c55e;   /* sunlit foliage highlight */
+  --anime-coral:            #f43f5e;   /* coastal flower coral */
+  --anime-amber:            #d97706;   /* warm sunshine amber */
 
-  /* ── Sky & Light Colors ────────────────────────────────────── */
-  --sunset-sky-top:   #0d0520;   /* zenith indigo */
-  --sunset-crimson:   #cc2200;   /* fiery mid-sky red */
-  --sunset-orange:    #e85c00;   /* vibrant sunset orange */
-  --sunset-gold:      #ffb800;   /* warm golden yellow */
-  --sunset-gold-bright: #ffd055; /* highlight gold */
+  /* ── UI Surfaces & Translucency (Frosted Glass) ────────────────────────── */
+  --anime-bg:               #eef8ff;
+  --anime-surface:          rgba(255, 255, 255, 0.72);
+  --anime-card:             rgba(255, 255, 255, 0.82);
+  --anime-card-hover:       rgba(255, 255, 255, 0.94);
+  --anime-border:           rgba(14, 165, 233, 0.22);
+  --anime-border-subtle:    rgba(255, 255, 255, 0.65);
+  --anime-border-focus:     #0284c7;
 
-  /* ── Ocean & Environment ────────────────────────────────────── */
-  --sunset-ocean:     #0a3d62;   /* deep ocean blue */
-  --sunset-sand:      #c8885a;   /* warm sand */
-  --sunset-silhouette: #080415;  /* palm / mountain dark */
+  /* ── Shadows & Glows ────────────────────────────────────────────────────── */
+  --anime-card-shadow:      0 12px 36px -6px rgba(14, 116, 144, 0.14), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --anime-card-shadow-hover: 0 16px 44px -8px rgba(14, 116, 144, 0.2), 0 6px 16px rgba(0, 0, 0, 0.06);
+  --anime-glow-sky:         rgba(2, 132, 199, 0.25);
+  --anime-glow-turquoise:   rgba(13, 148, 136, 0.25);
+  --anime-glow-amber:       rgba(217, 119, 6, 0.25);
+  --anime-glow-red:         rgba(225, 29, 72, 0.25);
 
-  /* ── UI Card & Panel ───────────────────────────────────────── */
-  --sunset-card:      rgba(16, 8, 38, 0.85);
-  --sunset-card-hover: rgba(22, 12, 50, 0.92);
+  /* ── Deep Legible Typography ────────────────────────────────────────────── */
+  --anime-text-main:        #0f172a;   /* deep rich slate for crystal clarity */
+  --anime-text-muted:       #334155;   /* medium slate */
+  --anime-text-dim:         #64748b;   /* soft muted slate */
 
-  /* ── Borders ───────────────────────────────────────────────── */
-  --sunset-border:       rgba(255, 160, 50, 0.28);
-  --sunset-border-active: #ffb800;
-  --sunset-border-dim:   rgba(255, 140, 30, 0.14);
+  /* ── Aliases for complete backward compatibility across all components ─── */
+  --cyber-bg:               var(--anime-bg);
+  --cyber-surface:          var(--anime-surface);
+  --cyber-card:             var(--anime-card);
+  --cyber-card-hover:       var(--anime-card-hover);
+  --cyber-border:           var(--anime-border);
+  --cyber-border-active:    var(--anime-border-focus);
+  --cyber-border-dim:       rgba(14, 165, 233, 0.14);
 
-  /* ── Glows ─────────────────────────────────────────────────── */
-  --sunset-gold-glow:   rgba(255, 184, 0, 0.38);
-  --sunset-gold-bg:     rgba(255, 184, 0, 0.09);
-  --sunset-orange-glow: rgba(232, 92, 0, 0.38);
-  --sunset-orange-bg:   rgba(232, 92, 0, 0.09);
-  --sunset-red-glow:    rgba(220, 40, 40, 0.4);
-  --sunset-red-bg:      rgba(220, 40, 40, 0.1);
-  --sunset-cyan:        #5ee7ff;
-  --sunset-cyan-glow:   rgba(94, 231, 255, 0.3);
-  --sunset-cyan-bg:     rgba(94, 231, 255, 0.08);
+  --cyber-green:            var(--anime-turquoise);
+  --cyber-green-bright:     #14b8a6;
+  --cyber-green-dim:        #0f766e;
+  --cyber-green-glow:       var(--anime-glow-turquoise);
+  --cyber-green-bg:         rgba(13, 148, 136, 0.1);
 
-  /* ── Text ──────────────────────────────────────────────────── */
-  --sunset-text:        #ffe8cc;   /* warm cream */
-  --sunset-text-muted:  #c4906a;   /* muted amber-tan */
-  --sunset-text-dim:    #7a5840;   /* dim brown */
+  --cyber-amber:            var(--anime-amber);
+  --cyber-amber-glow:       var(--anime-glow-amber);
+  --cyber-amber-bg:         rgba(217, 119, 6, 0.1);
 
-  /* ── Aliases (kept for components using old names) ─────────── */
-  --cyber-bg:            var(--sunset-bg);
-  --cyber-surface:       var(--sunset-surface);
-  --cyber-card:          var(--sunset-card);
-  --cyber-card-hover:    var(--sunset-card-hover);
-  --cyber-border:        var(--sunset-border);
-  --cyber-border-active: var(--sunset-border-active);
-  --cyber-border-dim:    var(--sunset-border-dim);
-  --cyber-green:         var(--sunset-gold);
-  --cyber-green-bright:  var(--sunset-gold-bright);
-  --cyber-green-dim:     #a07000;
-  --cyber-green-glow:    var(--sunset-gold-glow);
-  --cyber-green-bg:      var(--sunset-gold-bg);
-  --cyber-amber:         var(--sunset-orange);
-  --cyber-amber-glow:    var(--sunset-orange-glow);
-  --cyber-amber-bg:      var(--sunset-orange-bg);
-  --cyber-cyan:          var(--sunset-cyan);
-  --cyber-cyan-glow:     var(--sunset-cyan-glow);
-  --cyber-cyan-bg:       var(--sunset-cyan-bg);
-  --cyber-red:           #ff3344;
-  --cyber-red-glow:      var(--sunset-red-glow);
-  --cyber-red-bg:        var(--sunset-red-bg);
-  --cyber-text-main:     var(--sunset-text);
-  --cyber-text-muted:    var(--sunset-text-muted);
-  --cyber-text-dim:      var(--sunset-text-dim);
+  --cyber-cyan:             var(--anime-sky);
+  --cyber-cyan-glow:        var(--anime-glow-sky);
+  --cyber-cyan-bg:          rgba(2, 132, 199, 0.1);
 
-  /* ── Typography ─────────────────────────────────────────────── */
-  --font-mono:    'JetBrains Mono', 'Share Tech Mono', ui-monospace, monospace;
-  --font-display: 'Orbitron', 'JetBrains Mono', monospace;
+  --cyber-red:              #e11d48;
+  --cyber-red-glow:         var(--anime-glow-red);
+  --cyber-red-bg:           rgba(225, 29, 72, 0.1);
 
-  /* ── Transitions ────────────────────────────────────────────── */
-  --transition-fast:   0.15s ease;
-  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --cyber-text-main:        var(--anime-text-main);
+  --cyber-text-muted:       var(--anime-text-muted);
+  --cyber-text-dim:         var(--anime-text-dim);
+
+  /* ── Sunset Aliases ─────────────────────────────────────────────────────── */
+  --sunset-bg:              var(--anime-bg);
+  --sunset-surface:         var(--anime-surface);
+  --sunset-card:            var(--anime-card);
+  --sunset-card-hover:      var(--anime-card-hover);
+  --sunset-border:          var(--anime-border);
+  --sunset-border-dim:      rgba(14, 165, 233, 0.14);
+  --sunset-gold:            #0284c7;
+  --sunset-gold-glow:       var(--anime-glow-sky);
+  --sunset-gold-bg:         rgba(2, 132, 199, 0.1);
+  --sunset-orange:          #0d9488;
+  --sunset-orange-bg:       rgba(13, 148, 136, 0.1);
+  --sunset-cyan:            #0284c7;
+  --sunset-red-bg:          rgba(225, 29, 72, 0.1);
+  --sunset-red-glow:        var(--anime-glow-red);
+  --sunset-text:            var(--anime-text-main);
+  --sunset-text-muted:      var(--anime-text-muted);
+  --sunset-text-dim:        var(--anime-text-dim);
+
+  /* ── Typography Families ────────────────────────────────────────────────── */
+  --font-display:           'Comfortaa', cursive, sans-serif;
+  --font-sans:              'Comfortaa', cursive, sans-serif;
+  --font-mono:              'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* ── Motion & Transitions ───────────────────────────────────────────────── */
+  --transition-fast:        0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal:      0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-sm:              8px;
+  --radius-md:              12px;
+  --radius-lg:              16px;
+  --radius-full:            9999px;
 }
 
 * {
@@ -87,9 +117,9 @@
 html, body {
   width: 100%;
   min-height: 100vh;
-  background-color: var(--sunset-bg);
-  color: var(--sunset-text);
-  font-family: var(--font-mono);
+  background-color: #dbeafe;
+  color: var(--anime-text-main);
+  font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.5;
   overflow-x: hidden;
@@ -102,53 +132,56 @@ html, body {
   display: flex;
   flex-direction: column;
   position: relative;
-  background: radial-gradient(
-    ellipse at 30% 80%,
-    rgba(232, 92, 0, 0.07) 0%,
-    transparent 55%
-  ),
-  linear-gradient(180deg, #0d0520 0%, #100825 100%);
+  background: transparent;
 }
 
-/* ── Custom Scrollbars ───────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(13, 5, 32, 0.9); }
+/* ── Custom Scrollbars ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(224, 242, 254, 0.5);
+}
 ::-webkit-scrollbar-thumb {
-  background: var(--sunset-border);
-  border-radius: 2px;
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: var(--radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--sunset-gold);
-  box-shadow: 0 0 8px var(--sunset-gold-glow);
+  background: var(--anime-sky);
 }
 
-/* ── Typography ──────────────────────────────────────────────────── */
+/* ── Typography Helpers ──────────────────────────────────────────────────── */
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+  color: var(--anime-text-main);
 }
 
-.text-green  { color: var(--sunset-gold); }
-.text-amber  { color: var(--sunset-orange); }
-.text-cyan   { color: var(--sunset-cyan); }
-.text-red    { color: var(--cyber-red); }
-.text-muted  { color: var(--sunset-text-muted); }
-.text-dim    { color: var(--sunset-text-dim); }
+.font-mono {
+  font-family: var(--font-mono);
+}
 
-/* ── Sunset Buttons (primary style) ─────────────────────────────── */
+.text-green  { color: var(--anime-turquoise); }
+.text-amber  { color: var(--anime-amber); }
+.text-cyan   { color: var(--anime-sky); }
+.text-red    { color: #e11d48; }
+.text-muted  { color: var(--anime-text-muted); }
+.text-dim    { color: var(--anime-text-dim); }
+
+/* ── Anime Coastal Buttons ───────────────────────────────────────────────── */
 .cyber-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--sunset-gold-bg);
-  color: var(--sunset-gold);
-  border: 1px solid var(--sunset-border);
-  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--anime-sky);
+  border: 1px solid var(--anime-border);
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.04em;
   padding: 8px 16px;
   cursor: pointer;
   position: relative;
@@ -156,203 +189,216 @@ h1, h2, h3, h4, .font-display {
   text-decoration: none;
   outline: none;
   user-select: none;
-  border-radius: 3px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.08);
 }
 
 .cyber-btn:hover {
-  background: rgba(255, 184, 0, 0.16);
-  border-color: var(--sunset-gold);
-  box-shadow: 0 0 14px var(--sunset-gold-glow);
+  background: #ffffff;
+  color: var(--anime-ocean-deep);
+  border-color: var(--anime-sky);
+  box-shadow: 0 4px 14px var(--anime-glow-sky);
   transform: translateY(-1px);
 }
 
-.cyber-btn:active { transform: translateY(0); }
+.cyber-btn:active {
+  transform: translateY(0);
+}
 
 .cyber-btn-primary {
-  background: linear-gradient(135deg, var(--sunset-orange), var(--sunset-gold));
-  color: #0d0520;
-  border-color: var(--sunset-gold);
-  box-shadow: 0 0 18px var(--sunset-gold-glow);
+  background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+  color: #ffffff;
+  border: none;
   font-weight: 700;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.28);
 }
 
 .cyber-btn-primary:hover {
-  background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-bright));
-  box-shadow: 0 0 28px var(--sunset-gold-glow);
-  color: #080210;
+  background: linear-gradient(135deg, #0369a1 0%, #0f766e 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 22px rgba(2, 132, 199, 0.38);
 }
 
 .cyber-btn-secondary {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--sunset-text);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--anime-text-muted);
+  border: 1px solid var(--anime-border);
 }
 
 .cyber-btn-secondary:hover {
-  background: rgba(255, 184, 0, 0.08);
-  border-color: var(--sunset-border);
-  box-shadow: 0 0 10px var(--sunset-gold-glow);
-  color: var(--sunset-gold);
+  background: #ffffff;
+  color: var(--anime-sky);
+  border-color: var(--anime-sky);
+  box-shadow: 0 4px 12px var(--anime-glow-sky);
 }
 
 .cyber-btn-danger {
-  background: var(--sunset-red-bg);
-  color: var(--cyber-red);
-  border-color: var(--cyber-red);
+  background: rgba(225, 29, 72, 0.08);
+  color: #be123c;
+  border: 1px solid rgba(225, 29, 72, 0.25);
 }
 
 .cyber-btn-danger:hover {
-  background: rgba(220, 40, 40, 0.2);
-  box-shadow: 0 0 16px var(--sunset-red-glow);
+  background: rgba(225, 29, 72, 0.16);
+  color: #9f1239;
+  box-shadow: 0 4px 14px var(--anime-glow-red);
 }
 
 .cyber-btn-amber {
-  background: var(--sunset-orange-bg);
-  color: var(--sunset-orange);
-  border-color: var(--sunset-orange);
+  background: rgba(217, 119, 6, 0.08);
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.25);
 }
 
 .cyber-btn-amber:hover {
-  background: rgba(232, 92, 0, 0.2);
-  box-shadow: 0 0 16px var(--sunset-orange-glow);
+  background: rgba(217, 119, 6, 0.16);
+  box-shadow: 0 4px 14px var(--anime-glow-amber);
 }
 
 .cyber-btn-icon {
   padding: 8px;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius-md);
 }
 
-/* ── Form Inputs ─────────────────────────────────────────────────── */
+/* ── Anime Clean Form Inputs ─────────────────────────────────────────────── */
 .cyber-input {
   width: 100%;
-  background: rgba(13, 5, 32, 0.88);
-  border: 1px solid var(--sunset-border);
-  color: var(--sunset-text);
-  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--anime-border);
+  color: var(--anime-text-main);
+  font-family: var(--font-sans);
   font-size: 13.5px;
   padding: 10px 14px;
-  border-radius: 3px;
+  border-radius: var(--radius-md);
   outline: none;
   transition: all var(--transition-fast);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .cyber-input:focus {
-  border-color: var(--sunset-gold);
-  box-shadow: 0 0 14px var(--sunset-gold-glow);
-  background: rgba(16, 8, 38, 0.96);
+  background: #ffffff;
+  border-color: var(--anime-sky);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
 }
 
-.cyber-input::placeholder { color: var(--sunset-text-dim); }
+.cyber-input::placeholder {
+  color: var(--anime-text-dim);
+}
 
-/* ── Cards & Panels ──────────────────────────────────────────────── */
+/* ── Frosted Glass Cards & Panels ────────────────────────────────────────── */
 .cyber-card {
-  background: var(--sunset-card);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--sunset-border);
-  border-radius: 6px;
+  background: var(--anime-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--anime-border-subtle);
+  border-radius: var(--radius-lg);
   position: relative;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: all var(--transition-fast);
+  box-shadow: var(--anime-card-shadow);
 }
 
 .cyber-card-glow {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5),
-              inset 0 0 20px rgba(255, 160, 50, 0.04);
+  box-shadow: var(--anime-card-shadow);
 }
 
-.cyber-card:hover { border-color: rgba(255, 184, 0, 0.42); }
+.cyber-card:hover {
+  background: var(--anime-card-hover);
+  border-color: rgba(14, 165, 233, 0.35);
+  box-shadow: var(--anime-card-shadow-hover);
+}
 
-/* ── Corner Accents (warm gold) ──────────────────────────────────── */
+/* Subtle corner highlight instead of harsh cyber borders */
 .cyber-corners::before {
   content: '';
   position: absolute;
-  top: -1px; left: -1px;
-  width: 10px; height: 10px;
-  border-top: 2px solid var(--sunset-gold);
-  border-left: 2px solid var(--sunset-gold);
+  top: 0; left: 0;
+  width: 14px; height: 14px;
+  border-top: 2px solid var(--anime-sky);
+  border-left: 2px solid var(--anime-sky);
+  border-top-left-radius: var(--radius-lg);
   pointer-events: none;
-  border-radius: 3px 0 0 0;
+  opacity: 0.5;
 }
 
 .cyber-corners::after {
   content: '';
   position: absolute;
-  bottom: -1px; right: -1px;
-  width: 10px; height: 10px;
-  border-bottom: 2px solid var(--sunset-gold);
-  border-right: 2px solid var(--sunset-gold);
+  bottom: 0; right: 0;
+  width: 14px; height: 14px;
+  border-bottom: 2px solid var(--anime-turquoise);
+  border-right: 2px solid var(--anime-turquoise);
+  border-bottom-right-radius: var(--radius-lg);
   pointer-events: none;
-  border-radius: 0 0 3px 0;
+  opacity: 0.5;
 }
 
-/* ── Status Badges ───────────────────────────────────────────────── */
+/* ── Status Badges (Soft Pastel Pills) ────────────────────────────────────── */
 .cyber-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-radius: 3px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-full);
   border: 1px solid transparent;
 }
 
 .cyber-badge-green {
-  background: var(--sunset-gold-bg);
-  color: var(--sunset-gold);
-  border-color: var(--sunset-border);
+  background: rgba(13, 148, 136, 0.1);
+  color: #0f766e;
+  border-color: rgba(13, 148, 136, 0.25);
 }
 
 .cyber-badge-amber {
-  background: var(--sunset-orange-bg);
-  color: var(--sunset-orange);
-  border-color: rgba(232, 92, 0, 0.4);
+  background: rgba(217, 119, 6, 0.1);
+  color: #b45309;
+  border-color: rgba(217, 119, 6, 0.25);
 }
 
 .cyber-badge-cyan {
-  background: var(--sunset-cyan-bg);
-  color: var(--sunset-cyan);
-  border-color: rgba(94, 231, 255, 0.35);
+  background: rgba(2, 132, 199, 0.1);
+  color: #0369a1;
+  border-color: rgba(2, 132, 199, 0.25);
 }
 
 .cyber-badge-red {
-  background: var(--sunset-red-bg);
-  color: var(--cyber-red);
-  border-color: rgba(220, 40, 40, 0.4);
+  background: rgba(225, 29, 72, 0.1);
+  color: #be123c;
+  border-color: rgba(225, 29, 72, 0.25);
 }
 
-/* ── Pulse Dots ──────────────────────────────────────────────────── */
+/* ── Pulse Status Dots ───────────────────────────────────────────────────── */
 .pulse-dot {
-  width: 8px; height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background-color: var(--sunset-gold);
-  box-shadow: 0 0 8px var(--sunset-gold);
-  animation: pulse-glow 2s infinite;
+  background-color: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: pulse-soft 2s infinite ease-in-out;
 }
 
 .pulse-dot-red {
-  background-color: var(--cyber-red);
-  box-shadow: 0 0 8px var(--cyber-red);
-  animation: pulse-glow-red 1.2s infinite;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  box-shadow: 0 0 6px #ef4444;
+  animation: pulse-soft 1.2s infinite ease-in-out;
 }
 
-@keyframes pulse-glow {
+@keyframes pulse-soft {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.85); }
+  50%       { opacity: 0.45; transform: scale(0.85); }
 }
 
-@keyframes pulse-glow-red {
-  0%, 100% { opacity: 1; transform: scale(1.1); }
-  50%       { opacity: 0.3; transform: scale(0.9); }
-}
-
-/* ── Warm Vignette Overlay (replaces CRT) ────────────────────────── */
+/* ── Light Vignette Overlay (Replaces CRT) ───────────────────────────────── */
 .crt-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -361,52 +407,54 @@ h1, h2, h3, h4, .font-display {
   z-index: 9999;
   background: radial-gradient(
     ellipse at center,
-    transparent 55%,
-    rgba(8, 4, 20, 0.55) 100%
+    transparent 65%,
+    rgba(2, 132, 199, 0.08) 100%
   );
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
-.crt-active { opacity: 1; }
+.crt-active {
+  opacity: 0.6;
+}
 
-/* ── Subtle float animation for logo/icons ───────────────────────── */
-@keyframes float-gentle {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-3px); }
+/* ── Subtle Floating & Hover Effects ─────────────────────────────────────── */
+@keyframes soft-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-2px); }
 }
 
 .glitch-hover:hover {
-  animation: float-gentle 2s ease-in-out infinite;
+  animation: soft-float 1.8s ease-in-out infinite;
 }
 
-/* ── Modal Backdrops ─────────────────────────────────────────────── */
+/* ── Modal Backdrops (Frosted Summer Blur) ───────────────────────────────── */
 .cyber-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(8, 4, 20, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.98); }
+  from { opacity: 0; transform: scale(0.97); }
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* ── Utility layout ──────────────────────────────────────────────── */
+/* ── Utility Layout ──────────────────────────────────────────────────────── */
 .flex            { display: flex; }
 .flex-col        { display: flex; flex-direction: column; }
 .items-center    { align-items: center; }
 .justify-between { justify-content: space-between; }
 .justify-center  { justify-content: center; }
-.gap-2  { gap: 8px; }
-.gap-3  { gap: 12px; }
-.gap-4  { gap: 16px; }
-.gap-6  { gap: 24px; }
-.w-full { width: 100%; }
+.gap-2           { gap: 8px; }
+.gap-3           { gap: 12px; }
+.gap-4           { gap: 16px; }
+.gap-6           { gap: 24px; }
+.w-full          { width: 100%; }

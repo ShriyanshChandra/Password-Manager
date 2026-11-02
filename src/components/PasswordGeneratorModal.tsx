@@ -82,11 +82,15 @@ export const PasswordGeneratorModal: React.FC<PasswordGeneratorModalProps> = ({
   return (
     <div className="cyber-modal-backdrop">
       <div
-        className="cyber-card cyber-corners cyber-card-glow"
+        className="cyber-card cyber-corners"
         style={{
           width: '100%',
           maxWidth: '540px',
-          background: 'rgba(9, 15, 20, 0.96)',
+          background: 'rgba(255, 255, 255, 0.93)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(14, 165, 233, 0.22)',
+          boxShadow: '0 20px 60px -8px rgba(14, 116, 144, 0.22), 0 4px 16px rgba(0,0,0,0.06)',
           padding: '24px',
         }}
       >
@@ -136,11 +140,11 @@ export const PasswordGeneratorModal: React.FC<PasswordGeneratorModalProps> = ({
         <div
           style={{
             position: 'relative',
-            background: 'rgba(5, 8, 11, 0.95)',
-            border: '1px solid var(--cyber-border)',
+            background: 'rgba(14, 165, 233, 0.06)',
+            border: '1px solid rgba(14, 165, 233, 0.22)',
             padding: '16px',
             marginBottom: '16px',
-            borderRadius: '2px',
+            borderRadius: '10px',
           }}
         >
           <div
@@ -182,11 +186,12 @@ export const PasswordGeneratorModal: React.FC<PasswordGeneratorModalProps> = ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            background: 'rgba(0, 255, 102, 0.05)',
-            border: '1px solid var(--cyber-border-dim)',
+            background: 'rgba(14, 165, 233, 0.06)',
+            border: '1px solid rgba(14, 165, 233, 0.18)',
             padding: '10px 14px',
             marginBottom: '20px',
             fontSize: '12px',
+            borderRadius: '8px',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>

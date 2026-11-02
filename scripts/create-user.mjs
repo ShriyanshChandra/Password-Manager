@@ -72,3 +72,4 @@ createUserWithEmailAndPassword(auth, email, password)
     }
     process.exit(1);
   });
+

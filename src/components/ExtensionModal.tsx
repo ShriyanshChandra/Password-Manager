@@ -13,11 +13,15 @@ export const ExtensionModal: React.FC<ExtensionModalProps> = ({ isOpen, onClose 
   return (
     <div className="cyber-modal-backdrop">
       <div
-        className="cyber-card cyber-corners cyber-card-glow"
+        className="cyber-card cyber-corners"
         style={{
           width: '100%',
           maxWidth: '620px',
-          background: 'rgba(9, 15, 20, 0.96)',
+          background: 'rgba(255, 255, 255, 0.93)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(14, 165, 233, 0.22)',
+          boxShadow: '0 20px 60px -8px rgba(14, 116, 144, 0.22), 0 4px 16px rgba(0,0,0,0.06)',
           padding: '24px',
         }}
       >
@@ -52,8 +56,9 @@ export const ExtensionModal: React.FC<ExtensionModalProps> = ({ isOpen, onClose 
               display: 'flex',
               gap: '12px',
               padding: '12px 14px',
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid var(--cyber-border-dim)',
+              background: 'rgba(14, 165, 233, 0.05)',
+              border: '1px solid rgba(14, 165, 233, 0.16)',
+              borderRadius: '8px',
             }}
           >
             <Globe size={18} color="var(--cyber-green)" style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -72,8 +77,9 @@ export const ExtensionModal: React.FC<ExtensionModalProps> = ({ isOpen, onClose 
               display: 'flex',
               gap: '12px',
               padding: '12px 14px',
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid var(--cyber-border-dim)',
+              background: 'rgba(14, 165, 233, 0.05)',
+              border: '1px solid rgba(14, 165, 233, 0.16)',
+              borderRadius: '8px',
             }}
           >
             <Shield size={18} color="var(--cyber-cyan)" style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -92,8 +98,9 @@ export const ExtensionModal: React.FC<ExtensionModalProps> = ({ isOpen, onClose 
               display: 'flex',
               gap: '12px',
               padding: '12px 14px',
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid var(--cyber-border-dim)',
+              background: 'rgba(14, 165, 233, 0.05)',
+              border: '1px solid rgba(14, 165, 233, 0.16)',
+              borderRadius: '8px',
             }}
           >
             <Terminal size={18} color="var(--cyber-amber)" style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -112,8 +119,9 @@ export const ExtensionModal: React.FC<ExtensionModalProps> = ({ isOpen, onClose 
         <div
           style={{
             padding: '12px 16px',
-            background: 'rgba(0, 255, 102, 0.05)',
-            border: '1px solid var(--cyber-border)',
+            background: 'rgba(13, 148, 136, 0.07)',
+            border: '1px solid rgba(13, 148, 136, 0.22)',
+            borderRadius: '8px',
             marginBottom: '20px',
             fontSize: '12px',
           }}

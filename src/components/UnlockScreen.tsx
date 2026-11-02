@@ -7,8 +7,8 @@ import {
   AlertTriangle,
   Mail,
   ShieldCheck,
+  Waves,
 } from 'lucide-react';
-import { BeachScene3D, type Beach3DState } from './BeachScene3D';
 import { cyberAudio } from '../utils/cyberAudio';
 
 interface UnlockScreenProps {
@@ -21,7 +21,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [beach3DState, setBeach3DState] = useState<Beach3DState>('LOCKED');
+  const [isBreach, setIsBreach] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +40,6 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
     }
 
     setIsLoading(true);
-    setBeach3DState('UNLOCKING');
 
     try {
       await onSignIn(email.trim(), password);
@@ -49,140 +48,114 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
       const msg = err instanceof Error ? err.message : 'Authentication failed';
       setErrorMessage(msg);
       cyberAudio.playErrorSound();
-      setBeach3DState('BREACH');
-      setTimeout(() => setBeach3DState('LOCKED'), 1400);
+      setIsBreach(true);
+      setTimeout(() => setIsBreach(false), 2000);
       setIsLoading(false);
     }
   };
-
-  const isBreach = beach3DState === 'BREACH';
 
   return (
     <div
       style={{
         position: 'relative',
-        width: '100vw',
-        height: 'calc(100vh - 65px)',
-        overflow: 'hidden',
+        width: '100%',
+        minHeight: 'calc(100vh - 65px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: '24px 16px',
       }}
     >
-      {/* ========================================================= */}
-      {/* 1. FULL VIEWPORT ANIME BEACH SUNSET THREE.JS BACKGROUND    */}
-      {/* ========================================================= */}
+      {/* Centered Glassmorphic Anime Card */}
       <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          zIndex: 0,
-          pointerEvents: 'none',
-        }}
-      >
-        <BeachScene3D vaultState={beach3DState} />
-      </div>
-
-      {/* Warm radial vignette overlay */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background:
-            'radial-gradient(ellipse at 50% 50%, rgba(13, 5, 32, 0.45) 0%, rgba(13, 5, 32, 0.82) 75%)',
-          pointerEvents: 'none',
-          zIndex: 2,
-        }}
-      />
-
-      {/* ========================================================= */}
-      {/* 2. CENTERED AUTHENTICATION CARD                            */}
-      {/* ========================================================= */}
-      <div
-        className="cyber-card cyber-corners cyber-card-glow"
+        className="cyber-card"
         style={{
           position: 'relative',
           zIndex: 10,
           width: '100%',
-          maxWidth: '440px',
-          margin: '0 16px',
-          padding: '36px',
-          background: 'rgba(14, 7, 34, 0.88)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: `1px solid ${isBreach ? 'var(--cyber-red)' : 'var(--sunset-border)'}`,
+          maxWidth: '430px',
+          padding: '38px 32px',
+          background: 'rgba(255, 255, 255, 0.84)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: `1px solid ${isBreach ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255, 255, 255, 0.95)'}`,
           boxShadow: isBreach
-            ? '0 0 40px var(--sunset-red-glow)'
-            : '0 8px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(255, 184, 0, 0.1)',
+            ? '0 16px 40px rgba(239, 68, 68, 0.25)'
+            : '0 20px 50px rgba(14, 116, 144, 0.16), 0 4px 16px rgba(0, 0, 0, 0.04)',
+          borderRadius: '20px',
+          transition: 'all 0.3s ease',
         }}
       >
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+        {/* Card Header */}
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          {/* Pill Badge */}
           <div
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              padding: '4px 14px',
-              background: isBreach ? 'var(--sunset-red-bg)' : 'var(--sunset-gold-bg)',
-              border: `1px solid ${isBreach ? 'var(--cyber-red)' : 'var(--sunset-border)'}`,
-              borderRadius: '20px',
-              marginBottom: '14px',
+              padding: '5px 14px',
+              background: isBreach ? 'rgba(239, 68, 68, 0.1)' : 'rgba(2, 132, 199, 0.1)',
+              border: `1px solid ${isBreach ? 'rgba(239, 68, 68, 0.3)' : 'rgba(2, 132, 199, 0.25)'}`,
+              borderRadius: '9999px',
+              marginBottom: '16px',
             }}
           >
-            <span className={isBreach ? 'pulse-dot-red' : 'pulse-dot'} />
+            <Waves size={13} color={isBreach ? '#ef4444' : '#0284c7'} />
             <span
               style={{
                 fontSize: '11px',
                 fontWeight: 700,
-                color: isBreach ? 'var(--cyber-red)' : 'var(--sunset-gold)',
-                letterSpacing: '0.1em',
+                color: isBreach ? '#ef4444' : '#0284c7',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
               }}
             >
-              {isBreach ? 'ACCESS DENIED' : 'ZERO-KNOWLEDGE VAULT'}
+              {isBreach ? 'Access Denied' : 'Zero-Knowledge Coastal Vault'}
             </span>
           </div>
 
           <h1
             className="font-display"
             style={{
-              fontSize: '22px',
-              fontWeight: 900,
-              color: 'var(--sunset-text)',
-              letterSpacing: '0.08em',
-              marginBottom: '6px',
+              fontSize: '26px',
+              fontWeight: 800,
+              color: '#0f172a',
+              letterSpacing: '-0.02em',
+              marginBottom: '8px',
+              lineHeight: 1.2,
             }}
           >
-            SIGN IN
+            Welcome Back
           </h1>
 
-          <p style={{ fontSize: '12.5px', color: 'var(--sunset-text-muted)' }}>
-            Enter your email and master password to unlock your vault.
+          <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5 }}>
+            Sign in with your email and master password to unlock your personal credentials.
           </p>
         </div>
 
-        {/* Error Message */}
+        {/* Error Notification */}
         {errorMessage && (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
-              padding: '10px 14px',
-              marginBottom: '18px',
-              background: 'var(--sunset-red-bg)',
-              border: '1px solid var(--cyber-red)',
-              color: 'var(--cyber-red)',
-              fontSize: '12px',
-              borderRadius: '4px',
+              padding: '12px 14px',
+              marginBottom: '20px',
+              background: 'rgba(254, 242, 242, 0.95)',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
+              color: '#b91c1c',
+              fontSize: '12.5px',
+              borderRadius: '12px',
             }}
           >
-            <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+            <AlertTriangle size={16} style={{ flexShrink: 0, color: '#ef4444' }} />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        {/* Auth Form: Only Email and Password */}
+        {/* Auth Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           {/* Email Textbox */}
           <div>
@@ -191,20 +164,20 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                fontSize: '11.5px',
-                color: 'var(--sunset-text-muted)',
-                marginBottom: '6px',
+                fontSize: '12px',
+                color: '#334155',
+                marginBottom: '7px',
                 fontWeight: 600,
               }}
             >
-              <Mail size={12} color="var(--sunset-gold)" />
+              <Mail size={13} color="#0284c7" />
               <span>EMAIL ADDRESS</span>
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder="name@example.com"
               className="cyber-input"
               required
               autoFocus
@@ -213,18 +186,18 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
 
           {/* Master Password Textbox */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
               <label
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  fontSize: '11.5px',
-                  color: 'var(--sunset-text-muted)',
+                  fontSize: '12px',
+                  color: '#334155',
                   fontWeight: 600,
                 }}
               >
-                <Lock size={12} color="var(--sunset-gold)" />
+                <Lock size={13} color="#0284c7" />
                 <span>MASTER PASSWORD</span>
               </label>
               <button
@@ -233,8 +206,9 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--sunset-text-dim)',
-                  fontSize: '11px',
+                  color: '#0284c7',
+                  fontSize: '11.5px',
+                  fontWeight: 600,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -242,7 +216,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
                 }}
               >
                 {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
-                <span>{showPassword ? 'HIDE' : 'SHOW'}</span>
+                <span>{showPassword ? 'Hide' : 'Show'}</span>
               </button>
             </div>
 
@@ -251,7 +225,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your master password"
-              className="cyber-input"
+              className="cyber-input font-mono"
               style={{ letterSpacing: showPassword ? 'normal' : '0.18em' }}
               required
             />
@@ -262,26 +236,36 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({ onSignIn }) => {
             type="submit"
             disabled={isLoading}
             className="cyber-btn cyber-btn-primary"
-            style={{ padding: '13px', width: '100%', fontSize: '13.5px', marginTop: '4px' }}
+            style={{
+              padding: '13px',
+              width: '100%',
+              fontSize: '14px',
+              marginTop: '6px',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
           >
             {isLoading ? <Lock size={16} /> : <Unlock size={16} />}
-            <span>{isLoading ? 'AUTHENTICATING...' : 'SIGN IN & UNLOCK'}</span>
+            <span>{isLoading ? 'Decrypting Vault...' : 'Unlock Vault'}</span>
           </button>
 
-          {/* Security footnote */}
+          {/* Security Footnote */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              paddingTop: '8px',
-              fontSize: '11px',
-              color: 'var(--sunset-text-dim)',
+              paddingTop: '10px',
+              fontSize: '11.5px',
+              color: '#64748b',
             }}
           >
-            <ShieldCheck size={13} color="var(--sunset-gold)" />
-            <span>End-to-end client decrypted • AES-256-GCM</span>
+            <ShieldCheck size={14} color="#0d9488" />
+            <span>End-to-end client encryption • PBKDF2 + AES-256-GCM</span>
           </div>
         </form>
       </div>

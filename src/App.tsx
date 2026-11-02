@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Header } from './components/Header';
+import { AnimeBeachLandscape3D } from './components/AnimeBeachLandscape3D';
 import { UnlockScreen } from './components/UnlockScreen';
 import { VaultDashboard } from './components/VaultDashboard';
 import { PasswordGeneratorModal } from './components/PasswordGeneratorModal';
@@ -207,7 +208,12 @@ export const App: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
-      {/* CRT Scanline & Grain overlay if active */}
+      {/* Persistent Living Anime Beach Three.js Scene */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <AnimeBeachLandscape3D />
+      </div>
+
+      {/* Subtle Sunlight Haze overlay if active */}
       {crtActive && <div className="crt-overlay crt-active" />}
 
       {/* Navigation Header */}

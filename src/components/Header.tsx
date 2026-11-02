@@ -5,7 +5,7 @@ import {
   Cloud,
   Volume2,
   VolumeX,
-  Tv,
+  Sparkles,
   KeyRound,
   ShieldAlert,
   Puzzle,
@@ -53,10 +53,12 @@ export const Header: React.FC<HeaderProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '12px 24px',
-        borderBottom: '1px solid var(--sunset-border)',
-        background: 'rgba(13, 5, 32, 0.92)',
-        backdropFilter: 'blur(10px)',
+        padding: '12px 28px',
+        borderBottom: '1px solid rgba(14, 165, 233, 0.16)',
+        background: 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        boxShadow: '0 4px 20px rgba(14, 116, 144, 0.06)',
         position: 'sticky',
         top: 0,
         zIndex: 50,
@@ -64,42 +66,44 @@ export const Header: React.FC<HeaderProps> = ({
     >
       {/* Brand & System Status */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
-              width: '34px',
-              height: '34px',
+              width: '38px',
+              height: '38px',
+              borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: '1px solid var(--sunset-gold)',
-              background: 'var(--sunset-gold-bg)',
-              boxShadow: '0 0 12px var(--sunset-gold-glow)',
+              background: 'linear-gradient(135deg, #0284c7 0%, #0d9488 100%)',
+              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.28)',
             }}
           >
-            <Shield size={20} color="var(--sunset-gold)" />
+            <Shield size={20} color="#ffffff" />
           </div>
           <div>
             <div
-              className="font-display glitch-hover"
+              className="font-display"
               style={{
-                fontSize: '16px',
-                fontWeight: 900,
-                color: 'var(--sunset-gold)',
-                letterSpacing: '0.12em',
-                lineHeight: 1.2,
+                fontSize: '17px',
+                fontWeight: 800,
+                color: '#0f172a',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.15,
               }}
             >
               CIPHER//VAULT
             </div>
             <div
               style={{
-                fontSize: '10.5px',
-                color: 'var(--cyber-text-muted)',
-                letterSpacing: '0.08em',
+                fontSize: '11px',
+                fontWeight: 600,
+                color: '#0284c7',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
               }}
             >
-              ZERO-KNOWLEDGE :: BEACH VAULT
+              LIVING ANIME COASTAL VAULT
             </div>
           </div>
         </div>
@@ -110,25 +114,20 @@ export const Header: React.FC<HeaderProps> = ({
           style={{ display: 'none', md: 'inline-flex' } as React.CSSProperties}
         >
           <span className="pulse-dot" />
-          <span>{isLocked ? 'ENCRYPTED' : 'ARMED & ACTIVE'}</span>
+          <span>{isLocked ? 'VAULT LOCKED' : 'ONLINE & ENCRYPTED'}</span>
         </div>
       </div>
 
       {/* Middle Status Indicators (when unlocked) */}
       {!isLocked && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {/* Cloud Sync Status */}
           <div
-            className="cyber-badge"
-            style={{
-              background: isFirebaseConnected ? 'var(--cyber-cyan-bg)' : 'rgba(255, 255, 255, 0.05)',
-              color: isFirebaseConnected ? 'var(--cyber-cyan)' : 'var(--cyber-text-muted)',
-              borderColor: isFirebaseConnected ? 'var(--cyber-cyan)' : 'var(--cyber-border-dim)',
-            }}
+            className="cyber-badge cyber-badge-cyan"
             title={isFirebaseConnected ? 'Firebase Cloud Sync Connected' : 'Running in Local Storage Mode'}
           >
             <Cloud size={13} />
-            <span>{isFirebaseConnected ? 'CLOUD: SYNCED' : 'LOCAL: OFFLINE'}</span>
+            <span>{isFirebaseConnected ? 'CLOUD SYNCED' : 'OFFLINE MODE'}</span>
           </div>
 
           {/* Auto Lock Countdown */}
@@ -137,7 +136,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Auto-locks upon inactivity to protect your vault in RAM"
           >
             <Lock size={12} />
-            <span>LOCK IN {formatTimer(autoLockSeconds)}</span>
+            <span>AUTO-LOCK {formatTimer(autoLockSeconds)}</span>
           </div>
 
           {/* Security Score Badge */}
@@ -148,15 +147,15 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="cyber-badge"
             style={{
-              background: overallScore >= 80 ? 'var(--cyber-green-bg)' : 'var(--cyber-amber-bg)',
-              color: overallScore >= 80 ? 'var(--cyber-green)' : 'var(--cyber-amber)',
-              borderColor: overallScore >= 80 ? 'var(--cyber-green)' : 'var(--cyber-amber)',
+              background: overallScore >= 80 ? 'rgba(13, 148, 136, 0.1)' : 'rgba(217, 119, 6, 0.1)',
+              color: overallScore >= 80 ? '#0f766e' : '#b45309',
+              borderColor: overallScore >= 80 ? 'rgba(13, 148, 136, 0.25)' : 'rgba(217, 119, 6, 0.25)',
               cursor: 'pointer',
             }}
             title="Open Security Health Center"
           >
             <ShieldAlert size={13} />
-            <span>AUDIT: {overallScore}%</span>
+            <span>HEALTH: {overallScore}%</span>
           </button>
         </div>
       )}
@@ -171,10 +170,10 @@ export const Header: React.FC<HeaderProps> = ({
               onOpenGenerator();
             }}
             className="cyber-btn cyber-btn-secondary"
-            style={{ padding: '6px 12px', fontSize: '12px' }}
+            style={{ padding: '7px 13px', fontSize: '12.5px' }}
             title="Password & Passphrase Generator"
           >
-            <KeyRound size={14} color="var(--cyber-green)" />
+            <KeyRound size={14} color="#0284c7" />
             <span style={{ display: 'none', sm: 'inline' } as React.CSSProperties}>GENERATOR</span>
           </button>
         )}
@@ -186,14 +185,14 @@ export const Header: React.FC<HeaderProps> = ({
             onOpenExtension();
           }}
           className="cyber-btn cyber-btn-secondary"
-          style={{ padding: '6px 10px', fontSize: '12px' }}
+          style={{ padding: '7px 12px', fontSize: '12.5px' }}
           title="Browser Extension Integration"
         >
-          <Puzzle size={14} color="var(--cyber-cyan)" />
+          <Puzzle size={14} color="#0d9488" />
           <span style={{ display: 'none', sm: 'inline' } as React.CSSProperties}>EXTENSION</span>
         </button>
 
-        {/* CRT Scanline Toggle */}
+        {/* Subtle Sunlight Haze Toggle */}
         <button
           onClick={() => {
             cyberAudio.playKeypress();
@@ -201,12 +200,12 @@ export const Header: React.FC<HeaderProps> = ({
           }}
           className="cyber-btn cyber-btn-secondary cyber-btn-icon"
           style={{
-            borderColor: crtActive ? 'var(--cyber-green)' : 'rgba(255,255,255,0.15)',
-            color: crtActive ? 'var(--cyber-green)' : 'var(--cyber-text-muted)',
+            borderColor: crtActive ? 'var(--anime-sky)' : 'var(--anime-border)',
+            color: crtActive ? 'var(--anime-sky)' : 'var(--anime-text-dim)',
           }}
-          title={crtActive ? 'Disable CRT Scanlines' : 'Enable CRT Scanlines'}
+          title={crtActive ? 'Disable Sunlight Vignette' : 'Enable Sunlight Vignette'}
         >
-          <Tv size={15} />
+          <Sparkles size={16} />
         </button>
 
         {/* Sound Toggle */}
@@ -216,9 +215,9 @@ export const Header: React.FC<HeaderProps> = ({
             onToggleSound();
           }}
           className="cyber-btn cyber-btn-secondary cyber-btn-icon"
-          title={soundMuted ? 'Unmute Cyber Audio' : 'Mute Cyber Audio'}
+          title={soundMuted ? 'Unmute Audio' : 'Mute Audio'}
         >
-          {soundMuted ? <VolumeX size={15} /> : <Volume2 size={15} color="var(--sunset-gold)" />}
+          {soundMuted ? <VolumeX size={16} /> : <Volume2 size={16} color="#0284c7" />}
         </button>
 
         {/* Lock Vault Button */}
@@ -229,7 +228,7 @@ export const Header: React.FC<HeaderProps> = ({
               onLockVault();
             }}
             className="cyber-btn cyber-btn-danger"
-            style={{ padding: '6px 14px', fontSize: '12px' }}
+            style={{ padding: '7px 14px', fontSize: '12.5px', borderRadius: '10px' }}
             title="Immediately locks vault and wipes master key from RAM"
           >
             <Lock size={14} />
