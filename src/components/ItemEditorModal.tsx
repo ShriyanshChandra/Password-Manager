@@ -24,7 +24,7 @@ interface ItemEditorModalProps {
   item: VaultItem | null; // null if creating new item
   onSave: (item: VaultItem) => void;
   onDelete?: (id: string) => void;
-  onOpenGenerator: () => void;
+  onOpenGenerator: (onSelect?: (password: string) => void) => void;
 }
 
 export const ItemEditorModal: React.FC<ItemEditorModalProps> = ({
@@ -283,7 +283,12 @@ export const ItemEditorModal: React.FC<ItemEditorModalProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={onOpenGenerator}
+                      onClick={() => {
+                        cyberAudio.playKeypress();
+                        onOpenGenerator((newPassword) => {
+                          setFormData((prev) => ({ ...prev, password: newPassword }));
+                        });
+                      }}
                       style={{
                         background: 'none',
                         border: 'none',

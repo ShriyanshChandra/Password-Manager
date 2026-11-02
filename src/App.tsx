@@ -22,6 +22,7 @@ export const App: React.FC = () => {
 
   // Modals
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+  const [generatorTargetCallback, setGeneratorTargetCallback] = useState<((pwd: string) => void) | null>(null);
   const [isAuditOpen, setIsAuditOpen] = useState(false);
   const [isExtensionOpen, setIsExtensionOpen] = useState(false);
   const [isItemEditorOpen, setIsItemEditorOpen] = useState(false);
@@ -146,7 +147,10 @@ export const App: React.FC = () => {
       <Header
         isLocked={isLocked}
         onLockVault={handleLockVault}
-        onOpenGenerator={() => setIsGeneratorOpen(true)}
+        onOpenGenerator={() => {
+          setGeneratorTargetCallback(null);
+          setIsGeneratorOpen(true);
+        }}
         onOpenAudit={() => setIsAuditOpen(true)}
         onOpenExtension={() => setIsExtensionOpen(true)}
         isFirebaseConnected={isFirebaseConnected}
@@ -173,23 +177,15 @@ export const App: React.FC = () => {
             setEditingItem(item);
             setIsItemEditorOpen(true);
           }}
-          onOpenGenerator={() => setIsGeneratorOpen(true)}
+          onOpenGenerator={() => {
+            setGeneratorTargetCallback(null);
+            setIsGeneratorOpen(true);
+          }}
           onOpenAudit={() => setIsAuditOpen(true)}
           onExportBackup={handleExportBackup}
           onImportBackup={handleImportBackup}
         />
       )}
-
-      {/* Password Generator Modal */}
-      <PasswordGeneratorModal
-        isOpen={isGeneratorOpen}
-        onClose={() => setIsGeneratorOpen(false)}
-        onSelectPassword={(pwd) => {
-          if (editingItem) {
-            setEditingItem({ ...editingItem, password: pwd });
-          }
-        }}
-      />
 
       {/* Security Health Audit Modal */}
       <SecurityAuditModal
@@ -218,7 +214,29 @@ export const App: React.FC = () => {
         item={editingItem}
         onSave={handleSaveItem}
         onDelete={handleDeleteItem}
-        onOpenGenerator={() => setIsGeneratorOpen(true)}
+        onOpenGenerator={(onSelect) => {
+          setGeneratorTargetCallback(() => onSelect || null);
+          setIsGeneratorOpen(true);
+        }}
+      />
+
+      {/* Password Generator Modal - Rendered with zIndex: 1200 on top of ItemEditorModal */}
+      <PasswordGeneratorModal
+        isOpen={isGeneratorOpen}
+        zIndex={1200}
+        onClose={() => {
+          setIsGeneratorOpen(false);
+          setGeneratorTargetCallback(null);
+        }}
+        onSelectPassword={
+          generatorTargetCallback
+            ? (pwd) => {
+                generatorTargetCallback(pwd);
+                setIsGeneratorOpen(false);
+                setGeneratorTargetCallback(null);
+              }
+            : undefined
+        }
       />
     </div>
   );

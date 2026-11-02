@@ -9,12 +9,14 @@ interface PasswordGeneratorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectPassword?: (password: string) => void;
+  zIndex?: number;
 }
 
 export const PasswordGeneratorModal: React.FC<PasswordGeneratorModalProps> = ({
   isOpen,
   onClose,
   onSelectPassword,
+  zIndex = 1200,
 }) => {
   const [options, setOptions] = useState<PasswordGeneratorOptions>({
     length: 20,
@@ -81,7 +83,7 @@ export const PasswordGeneratorModal: React.FC<PasswordGeneratorModalProps> = ({
   };
 
   return (
-    <div className="cyber-modal-backdrop">
+    <div className="cyber-modal-backdrop" style={{ zIndex }}>
       <div
         className="cyber-card cyber-corners"
         style={{
