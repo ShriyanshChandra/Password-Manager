@@ -156,3 +156,49 @@ export async function decryptVault(
   const json = dec.decode(decryptedBuffer);
   return JSON.parse(json) as VaultItem[];
 }
+
+// Encrypt a single item for per-credential Firestore storage
+export async function encryptSingleItem(
+  item: VaultItem,
+  key: CryptoKey
+): Promise<{ iv: string; ciphertext: string }> {
+  const enc = new TextEncoder();
+  const rawData = enc.encode(JSON.stringify(item));
+  const iv = generateRandomBytes(12);
+
+  const ciphertextBuffer = await window.crypto.subtle.encrypt(
+    {
+      name: 'AES-GCM',
+      iv: iv as BufferSource,
+    },
+    key,
+    rawData
+  );
+
+  return {
+    iv: bufferToBase64(iv),
+    ciphertext: bufferToBase64(ciphertextBuffer),
+  };
+}
+
+// Decrypt a single item from per-credential Firestore storage
+export async function decryptSingleItem(
+  ivBase64: string,
+  ciphertextBase64: string,
+  key: CryptoKey
+): Promise<VaultItem> {
+  const iv = base64ToBuffer(ivBase64);
+  const ciphertext = base64ToBuffer(ciphertextBase64);
+
+  const decryptedBuffer = await window.crypto.subtle.decrypt(
+    {
+      name: 'AES-GCM',
+      iv: iv as BufferSource,
+    },
+    key,
+    ciphertext as BufferSource
+  );
+
+  const dec = new TextDecoder();
+  return JSON.parse(dec.decode(decryptedBuffer)) as VaultItem;
+}

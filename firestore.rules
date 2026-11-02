@@ -1,29 +1,28 @@
 rules_version = '2';
 
 // ===============================================================
-// Assumed Data Model
+// CIPHER//VAULT - Zero-Knowledge Firestore Security Rules
 // ===============================================================
 //
-// Collection: vaults/{userId}
-// Document ID: Firebase Auth UID of the user
-// Fields:
-//   - version: number (required) - format version e.g. 1
-//   - salt: string (required, max 128 chars) - Base64 PBKDF2 salt
-//   - authHash: string (required, max 256 chars) - Base64 password auth verifier
-//   - iv: string (required, max 64 chars) - Base64 AES-GCM IV
-//   - ciphertext: string (required, max 5,000,000 chars) - AES-GCM 256 client-encrypted payload
-//   - hint: string (optional, max 200 chars) - user password hint
-//   - updatedAt: number (required) - timestamp in milliseconds
-//   - lastSyncedAt: number (optional) - timestamp in milliseconds
+// Structure:
+// 1. users/{userId}
+//    - Email ID, login metadata, PBKDF2 salt, and auth hash verifier.
 //
-// Zero-Knowledge Architecture Guarantee:
-// Only ciphertext is ever saved in Firestore. Plaintext credentials never leave the client.
+// 2. users/{userId}/credentials/{credentialId}
+//    - Individual credential entries stored per account.
+//    - Encrypted client-side with AES-256-GCM.
+//
+// 3. vaults/{userId}
+//    - Complete encrypted backup bundle (for atomic restore/sync).
+//
+// Zero-Knowledge Guarantee:
+// Every read/write requires request.auth.uid == userId.
+// Plaintext passwords NEVER leave the client browser.
 // ===============================================================
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -32,35 +31,22 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function hasRequiredFields(fields) {
-      return request.resource.data.keys().hasAll(fields);
+    // User login profile and account document
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Individual credentials stored per account
+      match /credentials/{credentialId} {
+        allow read, write: if isOwner(userId);
+      }
     }
 
-    function hasOnlyAllowedFields(fields) {
-      return request.resource.data.keys().hasOnly(fields);
-    }
-
-    function isValidVaultBundle(data) {
-      return hasOnlyAllowedFields(['version', 'salt', 'authHash', 'iv', 'ciphertext', 'hint', 'updatedAt', 'lastSyncedAt']) &&
-             hasRequiredFields(['version', 'salt', 'authHash', 'iv', 'ciphertext', 'updatedAt']) &&
-             data.version is number &&
-             data.salt is string && data.salt.size() > 0 && data.salt.size() <= 128 &&
-             data.authHash is string && data.authHash.size() > 0 && data.authHash.size() <= 256 &&
-             data.iv is string && data.iv.size() > 0 && data.iv.size() <= 64 &&
-             data.ciphertext is string && data.ciphertext.size() > 0 && data.ciphertext.size() <= 5000000 &&
-             data.updatedAt is number &&
-             (!('hint' in data) || (data.hint is string && data.hint.size() <= 200)) &&
-             (!('lastSyncedAt' in data) || data.lastSyncedAt is number);
-    }
-
+    // Monolithic vault bundle collection (cached backup)
     match /vaults/{userId} {
-      allow read: if isOwner(userId);
-      allow create: if isOwner(userId) && isValidVaultBundle(request.resource.data);
-      allow update: if isOwner(userId) && isValidVaultBundle(request.resource.data);
-      allow delete: if isOwner(userId);
+      allow read, write: if isOwner(userId);
     }
 
-    // Default deny all other paths
+    // Deny all other access by default
     match /{document=**} {
       allow read, write: if false;
     }

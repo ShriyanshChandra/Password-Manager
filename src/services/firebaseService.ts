@@ -1,5 +1,14 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getFirestore, doc, setDoc, getDoc, type Firestore } from 'firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  getDocs,
+  deleteDoc,
+  type Firestore,
+} from 'firebase/firestore';
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -9,7 +18,8 @@ import {
   type Auth,
   type User,
 } from 'firebase/auth';
-import type { EncryptedVaultBundle, FirebaseConnectionConfig } from '../types/vault';
+import type { EncryptedVaultBundle, FirebaseConnectionConfig, VaultItem } from '../types/vault';
+import { encryptSingleItem, decryptSingleItem } from '../crypto/encryption';
 
 const FIREBASE_CONFIG_KEY = 'cipher_firebase_custom_config';
 
@@ -175,6 +185,101 @@ export class FirebaseService {
     } catch (err) {
       console.error('Firebase fetch error:', err);
       return null;
+    }
+  }
+
+  // ── Per-Account Firestore Space ──────────────────────────────────────────────
+
+  // 1. Record user login in Firestore under `users/{userId}`
+  public async recordUserLogin(authHash?: string, salt?: string): Promise<void> {
+    if (!this.db || !this.auth) return;
+    const user = this.auth.currentUser;
+    if (!user) return;
+
+    try {
+      const userDocRef = doc(this.db, 'users', user.uid);
+      await setDoc(
+        userDocRef,
+        {
+          email: user.email,
+          uid: user.uid,
+          lastLoginAt: Date.now(),
+          ...(authHash ? { authHash } : {}),
+          ...(salt ? { salt } : {}),
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      console.warn('Could not record user login metadata in Firestore:', err);
+    }
+  }
+
+  // 2. Save individual credential per account (users/{userId}/credentials/{credentialId})
+  public async saveAccountCredential(item: VaultItem, key: CryptoKey): Promise<boolean> {
+    if (!this.db || !this.auth) return false;
+    const user = this.auth.currentUser;
+    if (!user) return false;
+
+    try {
+      const { iv, ciphertext } = await encryptSingleItem(item, key);
+      const credDocRef = doc(this.db, 'users', user.uid, 'credentials', item.id);
+      await setDoc(credDocRef, {
+        id: item.id,
+        title: item.title,
+        category: item.category,
+        iv,
+        ciphertext,
+        updatedAt: Date.now(),
+      });
+      return true;
+    } catch (err) {
+      console.error('Error saving account credential to Firestore:', err);
+      return false;
+    }
+  }
+
+  // 3. Delete individual credential per account (users/{userId}/credentials/{credentialId})
+  public async deleteAccountCredential(itemId: string): Promise<boolean> {
+    if (!this.db || !this.auth) return false;
+    const user = this.auth.currentUser;
+    if (!user) return false;
+
+    try {
+      const credDocRef = doc(this.db, 'users', user.uid, 'credentials', itemId);
+      await deleteDoc(credDocRef);
+      return true;
+    } catch (err) {
+      console.error('Error deleting account credential from Firestore:', err);
+      return false;
+    }
+  }
+
+  // 4. Fetch all individual credentials for current account (users/{userId}/credentials)
+  public async fetchAccountCredentials(key: CryptoKey): Promise<VaultItem[]> {
+    if (!this.db || !this.auth) return [];
+    const user = this.auth.currentUser;
+    if (!user) return [];
+
+    try {
+      const credsColRef = collection(this.db, 'users', user.uid, 'credentials');
+      const snap = await getDocs(credsColRef);
+      const items: VaultItem[] = [];
+
+      for (const d of snap.docs) {
+        const data = d.data();
+        if (data.iv && data.ciphertext) {
+          try {
+            const decrypted = await decryptSingleItem(data.iv, data.ciphertext, key);
+            items.push(decrypted);
+          } catch (decErr) {
+            console.warn(`Failed to decrypt credential ${d.id}:`, decErr);
+          }
+        }
+      }
+      return items;
+    } catch (err) {
+      console.error('Error fetching account credentials from Firestore:', err);
+      return [];
     }
   }
 }

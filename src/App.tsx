@@ -113,6 +113,7 @@ export const App: React.FC = () => {
       setVaultBundle(initResult.bundle);
       setItems(initResult.items);
       setIsLocked(false);
+      await firebaseService.recordUserLogin(initResult.bundle.authHash, initResult.bundle.salt);
       return;
     }
 
@@ -120,8 +121,15 @@ export const App: React.FC = () => {
     const { masterKey: key, items: decryptedItems } = await vaultStorage.unlockVault(masterPassword);
     setMasterKey(key);
     setVaultBundle(bundle);
-    setItems(decryptedItems);
+
+    // 4. Fetch per-account credentials from Firestore users/{userId}/credentials
+    const cloudAccountItems = await firebaseService.fetchAccountCredentials(key);
+    const finalItems = cloudAccountItems.length > 0 ? cloudAccountItems : decryptedItems;
+    setItems(finalItems);
     setIsLocked(false);
+
+    // 5. Record user login in Firestore users/{userId}
+    await firebaseService.recordUserLogin(bundle.authHash, bundle.salt);
   };
 
   // Save vault item (add or update)
@@ -141,6 +149,9 @@ export const App: React.FC = () => {
     setItems(updatedItems);
     const newBundle = await vaultStorage.saveVault(updatedItems, masterKey, vaultBundle);
     setVaultBundle(newBundle);
+
+    // Save individual credential to Firestore users/{userId}/credentials/{credentialId}
+    await firebaseService.saveAccountCredential(itemToSave, masterKey);
   };
 
   // Delete vault item
@@ -151,6 +162,9 @@ export const App: React.FC = () => {
     setItems(updatedItems);
     const newBundle = await vaultStorage.saveVault(updatedItems, masterKey, vaultBundle);
     setVaultBundle(newBundle);
+
+    // Delete individual credential from Firestore users/{userId}/credentials/{credentialId}
+    await firebaseService.deleteAccountCredential(id);
   };
 
   // Export encrypted JSON backup
