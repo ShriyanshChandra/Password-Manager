@@ -28,7 +28,10 @@ service cloud.firestore {
         && data.email is string && data.email.size() <= 200
         && data.lastLoginAt is number
         && (!('authHash' in data) || (data.authHash is string && data.authHash.size() <= 128))
-        && (!('salt' in data) || (data.salt is string && data.salt.size() <= 64));
+        && (!('salt' in data) || (data.salt is string && data.salt.size() <= 64))
+        && (!('totpEnabled' in data) || (data.totpEnabled is bool))
+        && (!('totpSecret' in data) || (data.totpSecret is string && data.totpSecret.size() <= 128))
+        && (!('totpConfiguredAt' in data) || (data.totpConfiguredAt is number));
     }
 
     // Validation for individual encrypted credential: users/{userId}/credentials/{credentialId}

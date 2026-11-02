@@ -96,41 +96,12 @@ export const App: React.FC = () => {
     };
   }, [isLocked, handleLockVault, resetInactivityTimer]);
 
-  // Sign In with Email & Master Password
-  const handleSignIn = async (email: string, masterPassword: string) => {
-    // 1. Authenticate with Firebase Email/Password
-    await firebaseService.signInWithEmail(email, masterPassword);
-
-    // 2. Fetch encrypted ciphertext bundle from Firestore or LocalStorage
-    let bundle = await firebaseService.fetchFromCloud();
-    if (!bundle) {
-      bundle = await vaultStorage.getBundle();
-    }
-
-    if (!bundle) {
-      // First sign-in for this user, initialize vault with clean items
-      const initResult = await vaultStorage.initializeVault(masterPassword, undefined, false);
-      setMasterKey(initResult.masterKey);
-      setVaultBundle(initResult.bundle);
-      setItems(initResult.items);
-      setIsLocked(false);
-      await firebaseService.recordUserLogin(initResult.bundle.authHash, initResult.bundle.salt);
-      return;
-    }
-
-    // 3. Unlock with Master Password (verifies authHash and decrypts client-side)
-    const { masterKey: key, items: decryptedItems } = await vaultStorage.unlockVault(masterPassword);
+  // Unlock Success Handler (called after credentials + TOTP 2FA are verified)
+  const handleUnlockSuccess = (key: CryptoKey, bundle: EncryptedVaultBundle, unlockedItems: VaultItem[]) => {
     setMasterKey(key);
     setVaultBundle(bundle);
-
-    // 4. Fetch per-account credentials from Firestore users/{userId}/credentials
-    const cloudAccountItems = await firebaseService.fetchAccountCredentials(key);
-    const finalItems = cloudAccountItems.length > 0 ? cloudAccountItems : decryptedItems;
-    setItems(finalItems);
+    setItems(unlockedItems);
     setIsLocked(false);
-
-    // 5. Record user login in Firestore users/{userId}
-    await firebaseService.recordUserLogin(bundle.authHash, bundle.salt);
   };
 
   // Save vault item (add or update)
@@ -234,7 +205,7 @@ export const App: React.FC = () => {
 
       {/* Main Viewport */}
       {isLocked ? (
-        <UnlockScreen onSignIn={handleSignIn} />
+        <UnlockScreen onUnlockSuccess={handleUnlockSuccess} />
       ) : (
         <VaultDashboard
           items={items}

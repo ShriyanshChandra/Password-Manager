@@ -21,6 +21,17 @@ import {
 import type { EncryptedVaultBundle, FirebaseConnectionConfig, VaultItem } from '../types/vault';
 import { encryptSingleItem, decryptSingleItem } from '../crypto/encryption';
 
+export interface UserProfileDoc {
+  uid: string;
+  email: string;
+  lastLoginAt: number;
+  authHash?: string;
+  salt?: string;
+  totpEnabled?: boolean;
+  totpSecret?: string;
+  totpConfiguredAt?: number;
+}
+
 const FIREBASE_CONFIG_KEY = 'cipher_firebase_custom_config';
 
 const DEFAULT_FIREBASE_CONFIG: FirebaseConnectionConfig = {
@@ -201,7 +212,7 @@ export class FirebaseService {
       await setDoc(
         userDocRef,
         {
-          email: user.email,
+          email: user.email || '',
           uid: user.uid,
           lastLoginAt: Date.now(),
           ...(authHash ? { authHash } : {}),
@@ -211,6 +222,52 @@ export class FirebaseService {
       );
     } catch (err) {
       console.warn('Could not record user login metadata in Firestore:', err);
+    }
+  }
+
+  // 2. Fetch user profile from `users/{userId}`
+  public async getUserProfile(userId?: string): Promise<UserProfileDoc | null> {
+    if (!this.db) return null;
+    const uid = userId || this.auth?.currentUser?.uid;
+    if (!uid) return null;
+
+    try {
+      const userDocRef = doc(this.db, 'users', uid);
+      const snap = await getDoc(userDocRef);
+      if (snap.exists()) {
+        return snap.data() as UserProfileDoc;
+      }
+      return null;
+    } catch (err) {
+      console.warn('Could not fetch user profile from Firestore:', err);
+      return null;
+    }
+  }
+
+  // 3. Save User 2FA TOTP configuration to `users/{userId}`
+  public async saveUser2FA(secret: string): Promise<boolean> {
+    if (!this.db || !this.auth) return false;
+    const user = this.auth.currentUser;
+    if (!user) return false;
+
+    try {
+      const userDocRef = doc(this.db, 'users', user.uid);
+      await setDoc(
+        userDocRef,
+        {
+          email: user.email || '',
+          uid: user.uid,
+          lastLoginAt: Date.now(),
+          totpEnabled: true,
+          totpSecret: secret,
+          totpConfiguredAt: Date.now(),
+        },
+        { merge: true }
+      );
+      return true;
+    } catch (err) {
+      console.error('Error saving user 2FA configuration:', err);
+      return false;
     }
   }
 

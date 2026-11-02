@@ -281,3 +281,87 @@ export async function generateTOTP(secretBase32: string): Promise<{ code: string
     return { code: 'ERR', secondsRemaining: 30 };
   }
 }
+
+// Generate cryptographically random Base-32 secret key for Authenticator apps
+export function generateRandomBase32Secret(byteLength = 20): string {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const randomBytes = new Uint8Array(byteLength);
+  window.crypto.getRandomValues(randomBytes);
+  let bits = 0;
+  let value = 0;
+  let output = '';
+
+  for (let i = 0; i < randomBytes.length; i++) {
+    value = (value << 8) | randomBytes[i];
+    bits += 8;
+    while (bits >= 5) {
+      output += alphabet[(value >>> (bits - 5)) & 31];
+      bits -= 5;
+    }
+  }
+
+  if (bits > 0) {
+    output += alphabet[(value << (5 - bits)) & 31];
+  }
+
+  return output;
+}
+
+// Generate standard otpauth URI recognized by Google Authenticator, Authy, Apple Passwords
+export function getTOTPUri(email: string, secretBase32: string): string {
+  const issuer = 'code vault:password manager';
+  const label = `${issuer}:${email.trim()}`;
+  return `otpauth://totp/${encodeURIComponent(label)}?secret=${secretBase32}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
+}
+
+// Verify user-submitted 6-digit TOTP code with time-drift tolerance (±1 step / 30s)
+export async function verifyTOTP(
+  secretBase32: string,
+  token: string,
+  windowSteps = 1
+): Promise<boolean> {
+  const cleanToken = token.trim();
+  if (cleanToken.length !== 6 || !/^\d{6}$/.test(cleanToken)) {
+    return false;
+  }
+
+  const epoch = Math.floor(Date.now() / 1000);
+  const timeStep = 30;
+  const currentCounter = Math.floor(epoch / timeStep);
+  const secretBytes = base32ToBytes(secretBase32);
+
+  if (secretBytes.length === 0) return false;
+
+  const key = await window.crypto.subtle.importKey(
+    'raw',
+    secretBytes as BufferSource,
+    { name: 'HMAC', hash: 'SHA-1' },
+    false,
+    ['sign']
+  );
+
+  // Check current counter, and ±windowSteps to handle slight clock drift
+  for (let i = -windowSteps; i <= windowSteps; i++) {
+    const counter = currentCounter + i;
+    const counterBuffer = new ArrayBuffer(8);
+    const view = new DataView(counterBuffer);
+    view.setUint32(4, counter, false);
+
+    const signature = await window.crypto.subtle.sign('HMAC', key, counterBuffer);
+    const sigBytes = new Uint8Array(signature);
+    const offset = sigBytes[sigBytes.length - 1] & 0x0f;
+
+    const binaryCode =
+      ((sigBytes[offset] & 0x7f) << 24) |
+      ((sigBytes[offset + 1] & 0xff) << 16) |
+      ((sigBytes[offset + 2] & 0xff) << 8) |
+      (sigBytes[offset + 3] & 0xff);
+
+    const otp = (binaryCode % 1_000_000).toString().padStart(6, '0');
+    if (otp === cleanToken) {
+      return true;
+    }
+  }
+
+  return false;
+}
