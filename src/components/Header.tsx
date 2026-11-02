@@ -19,7 +19,6 @@ interface HeaderProps {
   onOpenAudit: () => void;
   onOpenExtension: () => void;
   isFirebaseConnected: boolean;
-  autoLockSeconds: number;
   overallScore: number;
   crtActive: boolean;
   onToggleCrt: () => void;
@@ -34,18 +33,12 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAudit,
   onOpenExtension,
   isFirebaseConnected,
-  autoLockSeconds,
   overallScore,
   crtActive,
   onToggleCrt,
   soundMuted,
   onToggleSound,
 }) => {
-  const formatTimer = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   return (
     <header
@@ -128,15 +121,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Cloud size={13} />
             <span>{isFirebaseConnected ? 'CLOUD SYNCED' : 'OFFLINE MODE'}</span>
-          </div>
-
-          {/* Auto Lock Countdown */}
-          <div
-            className="cyber-badge cyber-badge-amber"
-            title="Auto-locks upon inactivity to protect your vault in RAM"
-          >
-            <Lock size={12} />
-            <span>AUTO-LOCK {formatTimer(autoLockSeconds)}</span>
           </div>
 
           {/* Security Score Badge */}

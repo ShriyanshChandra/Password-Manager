@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Header } from './components/Header';
 import { AnimeBeachLandscape3D } from './components/AnimeBeachLandscape3D';
 import { UnlockScreen } from './components/UnlockScreen';
@@ -13,18 +13,12 @@ import { firebaseService } from './services/firebaseService';
 import { performSecurityAudit } from './crypto/passwordUtils';
 import { cyberAudio } from './utils/cyberAudio';
 
-const AUTO_LOCK_DEFAULT_SECONDS = 900; // 15 minutes of inactivity
-
 export const App: React.FC = () => {
   // Vault state
   const [isLocked, setIsLocked] = useState<boolean>(true);
   const [masterKey, setMasterKey] = useState<CryptoKey | null>(null);
   const [vaultBundle, setVaultBundle] = useState<EncryptedVaultBundle | null>(null);
   const [items, setItems] = useState<VaultItem[]>([]);
-
-  // Auto-lock countdown
-  const [autoLockSeconds, setAutoLockSeconds] = useState<number>(AUTO_LOCK_DEFAULT_SECONDS);
-  const autoLockTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Modals
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
@@ -45,13 +39,10 @@ export const App: React.FC = () => {
 
   // Lock Vault Action
   const handleLockVault = useCallback(async () => {
+    cyberAudio.playLockSound();
     setMasterKey(null);
     setItems([]);
     setIsLocked(true);
-    setAutoLockSeconds(AUTO_LOCK_DEFAULT_SECONDS);
-    if (autoLockTimerRef.current) {
-      clearInterval(autoLockTimerRef.current);
-    }
     // Sign out from Firebase Auth to ensure full lock
     try {
       await firebaseService.signOutUser();
@@ -59,42 +50,6 @@ export const App: React.FC = () => {
       // Ignored
     }
   }, []);
-
-  // Reset Auto Lock countdown on user activity
-  const resetInactivityTimer = useCallback(() => {
-    if (!isLocked) {
-      setAutoLockSeconds(AUTO_LOCK_DEFAULT_SECONDS);
-    }
-  }, [isLocked]);
-
-  useEffect(() => {
-    if (isLocked) return;
-
-    const handleActivity = () => resetInactivityTimer();
-    window.addEventListener('mousemove', handleActivity);
-    window.addEventListener('keydown', handleActivity);
-    window.addEventListener('click', handleActivity);
-
-    autoLockTimerRef.current = setInterval(() => {
-      setAutoLockSeconds((prev) => {
-        if (prev <= 1) {
-          cyberAudio.playLockSound();
-          handleLockVault();
-          return AUTO_LOCK_DEFAULT_SECONDS;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      window.removeEventListener('mousemove', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-      window.removeEventListener('click', handleActivity);
-      if (autoLockTimerRef.current) {
-        clearInterval(autoLockTimerRef.current);
-      }
-    };
-  }, [isLocked, handleLockVault, resetInactivityTimer]);
 
   // Unlock Success Handler (called after credentials + TOTP 2FA are verified)
   const handleUnlockSuccess = (key: CryptoKey, bundle: EncryptedVaultBundle, unlockedItems: VaultItem[]) => {
@@ -195,7 +150,6 @@ export const App: React.FC = () => {
         onOpenAudit={() => setIsAuditOpen(true)}
         onOpenExtension={() => setIsExtensionOpen(true)}
         isFirebaseConnected={isFirebaseConnected}
-        autoLockSeconds={autoLockSeconds}
         overallScore={auditReport.overallScore}
         crtActive={crtActive}
         onToggleCrt={() => setCrtActive(!crtActive)}
