@@ -48,3 +48,4 @@ export async function copySecureToClipboard(
     }
   }, clearAfterSeconds * 1000);
 }
+
