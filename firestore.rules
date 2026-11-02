@@ -1,23 +1,13 @@
 rules_version = '2';
 
 // ===============================================================
-// CIPHER//VAULT - Zero-Knowledge Firestore Security Rules
+// CIPHER//VAULT - Zero-Knowledge Hardened Firestore Security Rules
 // ===============================================================
 //
-// Structure:
-// 1. users/{userId}
-//    - Email ID, login metadata, PBKDF2 salt, and auth hash verifier.
-//
-// 2. users/{userId}/credentials/{credentialId}
-//    - Individual credential entries stored per account.
-//    - Encrypted client-side with AES-256-GCM.
-//
-// 3. vaults/{userId}
-//    - Complete encrypted backup bundle (for atomic restore/sync).
-//
 // Zero-Knowledge Guarantee:
-// Every read/write requires request.auth.uid == userId.
-// Plaintext passwords NEVER leave the client browser.
+// 1. Strict Owner Verification: Every read and write requires request.auth.uid == userId.
+// 2. Strict Type Safety & Size Limits: Defends against storage exhaustion, DoS, and malformed writes.
+// 3. No Plaintext Credential Fields: Only encrypted ciphertexts, IVs, and salts are stored.
 // ===============================================================
 
 service cloud.firestore {
@@ -31,19 +21,55 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Validation for user metadata document: users/{userId}
+    function isValidUserDoc(userId) {
+      let data = request.resource.data;
+      return data.uid == userId
+        && data.email is string && data.email.size() <= 200
+        && data.lastLoginAt is number
+        && (!('authHash' in data) || (data.authHash is string && data.authHash.size() <= 128))
+        && (!('salt' in data) || (data.salt is string && data.salt.size() <= 64));
+    }
+
+    // Validation for individual encrypted credential: users/{userId}/credentials/{credentialId}
+    function isValidCredentialDoc(credentialId) {
+      let data = request.resource.data;
+      return data.id is string && data.id == credentialId && data.id.size() <= 100
+        && data.iv is string && data.iv.size() <= 64
+        && data.ciphertext is string && data.ciphertext.size() <= 65536
+        && data.updatedAt is number;
+    }
+
+    // Validation for monolithic encrypted vault bundle: vaults/{userId}
+    function isValidVaultBundle() {
+      let data = request.resource.data;
+      return data.version is number
+        && data.salt is string && data.salt.size() <= 64
+        && data.authHash is string && data.authHash.size() <= 128
+        && data.iv is string && data.iv.size() <= 64
+        && data.ciphertext is string && data.ciphertext.size() <= 1048576
+        && data.updatedAt is number;
+    }
+
     // User login profile and account document
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidUserDoc(userId);
+      allow delete: if isOwner(userId);
 
-      // Individual credentials stored per account
+      // Individual encrypted credentials stored per account
       match /credentials/{credentialId} {
-        allow read, write: if isOwner(userId);
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidCredentialDoc(credentialId);
+        allow delete: if isOwner(userId);
       }
     }
 
     // Monolithic vault bundle collection (cached backup)
     match /vaults/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidVaultBundle();
+      allow delete: if isOwner(userId);
     }
 
     // Deny all other access by default

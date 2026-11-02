@@ -72,7 +72,8 @@ export async function deriveKey(
 // Derive authentication hash to verify password without trial decryption
 export async function deriveAuthHash(
   masterPassword: string,
-  saltBase64: string
+  saltBase64: string,
+  iterations = PBKDF2_ITERATIONS
 ): Promise<string> {
   const enc = new TextEncoder();
   const passwordKey = await window.crypto.subtle.importKey(
@@ -93,7 +94,7 @@ export async function deriveAuthHash(
     {
       name: 'PBKDF2',
       salt: authSalt as BufferSource,
-      iterations: 20_000,
+      iterations,
       hash: 'SHA-256',
     },
     passwordKey,

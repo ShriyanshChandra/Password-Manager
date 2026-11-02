@@ -78,15 +78,32 @@ export class VaultStorageService {
       throw new Error('No vault found. Please create a new vault first.');
     }
 
-    // Verify auth hash
-    const computedAuthHash = await deriveAuthHash(masterPassword, bundle.salt);
-    if (computedAuthHash !== bundle.authHash) {
+    // Verify auth hash (tries 120,000 iterations first, falls back to legacy 20,000 for seamless migration)
+    const computedAuthHash = await deriveAuthHash(masterPassword, bundle.salt, 120_000);
+    let matched = computedAuthHash === bundle.authHash;
+    let needsUpgrade = false;
+
+    if (!matched) {
+      const legacyAuthHash = await deriveAuthHash(masterPassword, bundle.salt, 20_000);
+      if (legacyAuthHash === bundle.authHash) {
+        matched = true;
+        needsUpgrade = true;
+      }
+    }
+
+    if (!matched) {
       throw new Error('ACCESS DENIED: Master password incorrect.');
     }
 
     // Derive actual key
     const masterKey = await deriveKey(masterPassword, bundle.salt);
     const items = await decryptVault(bundle, masterKey);
+
+    // If upgraded from legacy 20,000 iterations, persist the new hardened authHash
+    if (needsUpgrade) {
+      bundle.authHash = computedAuthHash;
+      await this.saveVault(items, masterKey, bundle);
+    }
 
     return { masterKey, bundle, items };
   }

@@ -3,6 +3,7 @@ import { X, RefreshCw, Copy, Check, ShieldCheck, Sliders } from 'lucide-react';
 import type { PasswordGeneratorOptions } from '../types/vault';
 import { generatePassword, evaluatePasswordStrength } from '../crypto/passwordUtils';
 import { cyberAudio } from '../utils/cyberAudio';
+import { copySecureToClipboard } from '../utils/clipboard';
 
 interface PasswordGeneratorModalProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ export const PasswordGeneratorModal: React.FC<PasswordGeneratorModalProps> = ({
 
   const handleCopy = () => {
     if (!generatedPassword) return;
-    navigator.clipboard.writeText(generatedPassword);
+    copySecureToClipboard(generatedPassword, 45);
     cyberAudio.playCopySound();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

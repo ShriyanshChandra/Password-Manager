@@ -26,6 +26,7 @@ import {
 import type { VaultCategory, VaultItem } from '../types/vault';
 import { evaluatePasswordStrength, generateTOTP } from '../crypto/passwordUtils';
 import { cyberAudio } from '../utils/cyberAudio';
+import { copySecureToClipboard } from '../utils/clipboard';
 
 interface VaultDashboardProps {
   items: VaultItem[];
@@ -126,7 +127,7 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
 
   const handleCopy = (text: string, fieldKey: string) => {
     if (!text) return;
-    navigator.clipboard.writeText(text);
+    copySecureToClipboard(text, 45);
     cyberAudio.playCopySound();
     setCopiedField(fieldKey);
     setTimeout(() => {

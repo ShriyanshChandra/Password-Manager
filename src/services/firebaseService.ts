@@ -225,8 +225,6 @@ export class FirebaseService {
       const credDocRef = doc(this.db, 'users', user.uid, 'credentials', item.id);
       await setDoc(credDocRef, {
         id: item.id,
-        title: item.title,
-        category: item.category,
         iv,
         ciphertext,
         updatedAt: Date.now(),
