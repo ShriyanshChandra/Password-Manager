@@ -1,111 +1,153 @@
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
-
 /* ==========================================================================
-   CIPHER//VAULT — Living Anime Beach Landscape Design System
-   Inspired by Studio Ghibli summer coastal landscapes & environmental harmony
+   CIPHER//VAULT — Apple Liquid Glass Design System (2025 HIG)
+   macOS Tahoe / iOS 26 / visionOS Inspired Translucent Optical Materials
    ========================================================================== */
 
 :root {
-  /* ── Living Anime Beach Palette ─────────────────────────────────────────── */
-  --anime-sky:              #0284c7;   /* deep summer cerulean */
-  --anime-sky-mid:          #38bdf8;   /* bright azure */
-  --anime-sky-light:        #e0f2fe;   /* horizon pale cyan */
-  --anime-ocean-deep:       #0369a1;   /* deep offshore sapphire */
-  --anime-ocean-mid:        #0ea5e9;   /* cerulean mid-waters */
-  --anime-turquoise:        #0d9488;   /* coastal turquoise */
-  --anime-sea-foam:         #f0fdfa;   /* surf lace white */
-  --anime-sand:             #fef3c7;   /* warm golden sand */
-  --anime-sand-warm:        #fde68a;   /* sunlit sand */
-  --anime-leaf-dark:        #15803d;   /* lush forest green */
-  --anime-leaf-green:       #16a34a;   /* vibrant anime tree green */
-  --anime-leaf-bright:      #22c55e;   /* sunlit foliage highlight */
-  --anime-coral:            #f43f5e;   /* coastal flower coral */
-  --anime-amber:            #d97706;   /* warm sunshine amber */
+  /* ── Apple System Semantic Colors (Display P3 / sRGB Mapped) ────────────── */
+  --apple-blue:             #0071e3;   /* Apple System Blue */
+  --apple-blue-hover:       #0077ed;   /* Lightened Blue */
+  --apple-blue-active:      #0062c4;   /* Pressed Blue */
+  --apple-blue-glow:        rgba(0, 113, 227, 0.28);
+  --apple-blue-bg:          rgba(0, 113, 227, 0.10);
 
-  /* ── UI Surfaces & Translucency (Frosted Glass) ────────────────────────── */
-  --anime-bg:               #eef8ff;
-  --anime-surface:          rgba(255, 255, 255, 0.72);
-  --anime-card:             rgba(255, 255, 255, 0.82);
-  --anime-card-hover:       rgba(255, 255, 255, 0.94);
-  --anime-border:           rgba(14, 165, 233, 0.22);
-  --anime-border-subtle:    rgba(255, 255, 255, 0.65);
-  --anime-border-focus:     #0284c7;
+  --apple-indigo:           #5856d6;   /* Apple System Indigo */
+  --apple-purple:           #af52de;   /* Apple System Purple */
+  --apple-green:            #34c759;   /* Apple System Green (Success) */
+  --apple-green-dim:        #248a3d;
+  --apple-green-glow:       rgba(52, 199, 89, 0.28);
+  --apple-green-bg:         rgba(52, 199, 89, 0.12);
 
-  /* ── Shadows & Glows ────────────────────────────────────────────────────── */
-  --anime-card-shadow:      0 12px 36px -6px rgba(14, 116, 144, 0.14), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --anime-card-shadow-hover: 0 16px 44px -8px rgba(14, 116, 144, 0.2), 0 6px 16px rgba(0, 0, 0, 0.06);
-  --anime-glow-sky:         rgba(2, 132, 199, 0.25);
-  --anime-glow-turquoise:   rgba(13, 148, 136, 0.25);
-  --anime-glow-amber:       rgba(217, 119, 6, 0.25);
-  --anime-glow-red:         rgba(225, 29, 72, 0.25);
+  --apple-orange:           #ff9500;   /* Apple System Orange (Warning) */
+  --apple-orange-glow:      rgba(255, 149, 0, 0.28);
+  --apple-orange-bg:        rgba(255, 149, 0, 0.12);
 
-  /* ── Deep Legible Typography ────────────────────────────────────────────── */
-  --anime-text-main:        #0f172a;   /* deep rich slate for crystal clarity */
-  --anime-text-muted:       #334155;   /* medium slate */
-  --anime-text-dim:         #64748b;   /* soft muted slate */
+  --apple-red:              #ff3b30;   /* Apple System Red (Destructive) */
+  --apple-red-glow:         rgba(255, 59, 48, 0.28);
+  --apple-red-bg:           rgba(255, 59, 48, 0.12);
 
-  /* ── Aliases for complete backward compatibility across all components ─── */
-  --cyber-bg:               var(--anime-bg);
-  --cyber-surface:          var(--anime-surface);
-  --cyber-card:             var(--anime-card);
-  --cyber-card-hover:       var(--anime-card-hover);
-  --cyber-border:           var(--anime-border);
-  --cyber-border-active:    var(--anime-border-focus);
-  --cyber-border-dim:       rgba(14, 165, 233, 0.14);
+  --apple-teal:             #59adc4;   /* Apple System Teal */
+  --apple-cyan:             #0071e3;
 
-  --cyber-green:            var(--anime-turquoise);
-  --cyber-green-bright:     #14b8a6;
-  --cyber-green-dim:        #0f766e;
-  --cyber-green-glow:       var(--anime-glow-turquoise);
-  --cyber-green-bg:         rgba(13, 148, 136, 0.1);
+  /* ── Apple Cupertino Typography Hierarchy ───────────────────────────────── */
+  --apple-label:            #1d1d1f;   /* Primary label text (light mode) */
+  --apple-secondary-label:  #6e6e73;   /* Secondary supporting text */
+  --apple-tertiary-label:   #86868b;   /* Tertiary footnote / icon text */
+  --apple-quaternary-label: #d2d2d7;   /* Hairline / disabled text */
 
-  --cyber-amber:            var(--anime-amber);
-  --cyber-amber-glow:       var(--anime-glow-amber);
-  --cyber-amber-bg:         rgba(217, 119, 6, 0.1);
+  /* ── Apple Liquid Glass Materials (2025 HIG Translucency) ───────────────── */
+  --glass-bg:               rgba(255, 255, 255, 0.75);
+  --glass-bg-hover:         rgba(255, 255, 255, 0.88);
+  --glass-bg-elevated:      rgba(255, 255, 255, 0.92);
+  --glass-border:           rgba(255, 255, 255, 0.65);
+  --glass-border-subtle:    rgba(255, 255, 255, 0.40);
+  --glass-border-active:    #0071e3;
 
-  --cyber-cyan:             var(--anime-sky);
-  --cyber-cyan-glow:        var(--anime-glow-sky);
-  --cyber-cyan-bg:          rgba(2, 132, 199, 0.1);
+  --glass-blur:             blur(28px) saturate(190%) brightness(104%);
+  --glass-blur-heavy:       blur(36px) saturate(200%) brightness(105%);
 
-  --cyber-red:              #e11d48;
-  --cyber-red-glow:         var(--anime-glow-red);
-  --cyber-red-bg:           rgba(225, 29, 72, 0.1);
+  --glass-specular:         inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+  --glass-shadow:           0 12px 36px -4px rgba(0, 0, 0, 0.08), 0 3px 10px rgba(0, 0, 0, 0.03);
+  --glass-shadow-hover:     0 20px 48px -6px rgba(0, 113, 227, 0.14), 0 4px 14px rgba(0, 0, 0, 0.05);
 
-  --cyber-text-main:        var(--anime-text-main);
-  --cyber-text-muted:       var(--anime-text-muted);
-  --cyber-text-dim:         var(--anime-text-dim);
+  /* ── Backward-Compatible System Aliases ─────────────────────────────────── */
+  --anime-sky:              var(--apple-blue);
+  --anime-sky-mid:          #38bdf8;
+  --anime-sky-light:        #f0f7ff;
+  --anime-ocean-deep:       #005bb5;
+  --anime-ocean-mid:        var(--apple-blue);
+  --anime-turquoise:        var(--apple-blue);
+  --anime-sea-foam:         #f5f9ff;
+  --anime-sand:             #ffffff;
+  --anime-sand-warm:        #f5f5f7;
+  --anime-leaf-dark:        var(--apple-green-dim);
+  --anime-leaf-green:       var(--apple-green);
+  --anime-leaf-bright:      #30d158;
+  --anime-coral:            var(--apple-red);
+  --anime-amber:            var(--apple-orange);
 
-  /* ── Sunset Aliases ─────────────────────────────────────────────────────── */
-  --sunset-bg:              var(--anime-bg);
-  --sunset-surface:         var(--anime-surface);
-  --sunset-card:            var(--anime-card);
-  --sunset-card-hover:      var(--anime-card-hover);
-  --sunset-border:          var(--anime-border);
-  --sunset-border-dim:      rgba(14, 165, 233, 0.14);
-  --sunset-gold:            #0284c7;
-  --sunset-gold-glow:       var(--anime-glow-sky);
-  --sunset-gold-bg:         rgba(2, 132, 199, 0.1);
-  --sunset-orange:          #0d9488;
-  --sunset-orange-bg:       rgba(13, 148, 136, 0.1);
-  --sunset-cyan:            #0284c7;
-  --sunset-red-bg:          rgba(225, 29, 72, 0.1);
-  --sunset-red-glow:        var(--anime-glow-red);
-  --sunset-text:            var(--anime-text-main);
-  --sunset-text-muted:      var(--anime-text-muted);
-  --sunset-text-dim:        var(--anime-text-dim);
+  --anime-bg:               #f5f5f7;
+  --anime-surface:          var(--glass-bg);
+  --anime-card:             var(--glass-bg);
+  --anime-card-hover:       var(--glass-bg-hover);
+  --anime-border:           var(--glass-border);
+  --anime-border-subtle:    var(--glass-border-subtle);
+  --anime-border-focus:     var(--apple-blue);
 
-  /* ── Typography Families ────────────────────────────────────────────────── */
-  --font-display:           'Comfortaa', cursive, sans-serif;
-  --font-sans:              'Comfortaa', cursive, sans-serif;
-  --font-mono:              'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --anime-card-shadow:      var(--glass-shadow);
+  --anime-card-shadow-hover: var(--glass-shadow-hover);
+  --anime-glow-sky:         var(--apple-blue-glow);
+  --anime-glow-turquoise:   var(--apple-blue-glow);
+  --anime-glow-amber:       var(--apple-orange-glow);
+  --anime-glow-red:         var(--apple-red-glow);
 
-  /* ── Motion & Transitions ───────────────────────────────────────────────── */
+  --anime-text-main:        var(--apple-label);
+  --anime-text-muted:       var(--apple-secondary-label);
+  --anime-text-dim:         var(--apple-tertiary-label);
+
+  --cyber-bg:               var(--glass-bg);
+  --cyber-surface:          var(--glass-bg);
+  --cyber-card:             var(--glass-bg);
+  --cyber-card-hover:       var(--glass-bg-hover);
+  --cyber-border:           var(--glass-border);
+  --cyber-border-active:    var(--apple-blue);
+  --cyber-border-dim:       rgba(0, 0, 0, 0.08);
+
+  --cyber-green:            var(--apple-green);
+  --cyber-green-bright:     #30d158;
+  --cyber-green-dim:        var(--apple-green-dim);
+  --cyber-green-glow:       var(--apple-green-glow);
+  --cyber-green-bg:         var(--apple-green-bg);
+
+  --cyber-amber:            var(--apple-orange);
+  --cyber-amber-glow:       var(--apple-orange-glow);
+  --cyber-amber-bg:         var(--apple-orange-bg);
+
+  --cyber-cyan:             var(--apple-blue);
+  --cyber-cyan-glow:        var(--apple-blue-glow);
+  --cyber-cyan-bg:          var(--apple-blue-bg);
+
+  --cyber-red:              var(--apple-red);
+  --cyber-red-glow:         var(--apple-red-glow);
+  --cyber-red-bg:           var(--apple-red-bg);
+
+  --cyber-text-main:        var(--apple-label);
+  --cyber-text-muted:       var(--apple-secondary-label);
+  --cyber-text-dim:         var(--apple-tertiary-label);
+
+  --sunset-bg:              var(--glass-bg);
+  --sunset-surface:         var(--glass-bg);
+  --sunset-card:            var(--glass-bg);
+  --sunset-card-hover:      var(--glass-bg-hover);
+  --sunset-border:          var(--glass-border);
+  --sunset-border-dim:      rgba(0, 0, 0, 0.08);
+  --sunset-gold:            var(--apple-blue);
+  --sunset-gold-glow:       var(--apple-blue-glow);
+  --sunset-gold-bg:         var(--apple-blue-bg);
+  --sunset-orange:          var(--apple-blue);
+  --sunset-orange-bg:       var(--apple-blue-bg);
+  --sunset-cyan:            var(--apple-blue);
+  --sunset-red-bg:          var(--apple-red-bg);
+  --sunset-red-glow:        var(--apple-red-glow);
+  --sunset-text:            var(--apple-label);
+  --sunset-text-muted:      var(--apple-secondary-label);
+  --sunset-text-dim:        var(--apple-tertiary-label);
+
+  /* ── Apple Typography Stack (San Francisco First) ───────────────────────── */
+  --font-display:           -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans:              -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono:              "SF Mono", "JetBrains Mono", Menlo, Monaco, Consolas, ui-monospace, monospace;
+
+  /* ── Apple Fluid Spring Motion ──────────────────────────────────────────── */
+  --transition-spring:      0.32s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast:        0.18s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal:      0.28s cubic-bezier(0.16, 1, 0.3, 1);
+
   --radius-sm:              8px;
   --radius-md:              12px;
-  --radius-lg:              16px;
-  --radius-full:            9999px;
+  --radius-lg:              18px;
+  --radius-xl:              22px;
+  --radius-full:            9999px; /* Capsule */
 }
 
 * {
@@ -117,8 +159,8 @@
 html, body {
   width: 100%;
   min-height: 100vh;
-  background-color: #dbeafe;
-  color: var(--anime-text-main);
+  background-color: #0a0b10;
+  color: var(--apple-label);
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.5;
@@ -135,50 +177,52 @@ html, body {
   background: transparent;
 }
 
-/* ── Custom Scrollbars ───────────────────────────────────────────────────── */
+/* ── Apple Minimalist Scrollbars ─────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(224, 242, 254, 0.5);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(14, 165, 233, 0.35);
+  background: rgba(0, 0, 0, 0.18);
   border-radius: var(--radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--anime-sky);
+  background: rgba(0, 0, 0, 0.32);
 }
 
 /* ── Typography Helpers ──────────────────────────────────────────────────── */
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.022em;
   font-weight: 700;
-  color: var(--anime-text-main);
+  color: var(--apple-label);
 }
 
 .font-mono {
   font-family: var(--font-mono);
 }
 
-.text-green  { color: var(--anime-turquoise); }
-.text-amber  { color: var(--anime-amber); }
-.text-cyan   { color: var(--anime-sky); }
-.text-red    { color: #e11d48; }
-.text-muted  { color: var(--anime-text-muted); }
-.text-dim    { color: var(--anime-text-dim); }
+.text-green  { color: var(--apple-green); }
+.text-amber  { color: var(--apple-orange); }
+.text-cyan   { color: var(--apple-blue); }
+.text-red    { color: var(--apple-red); }
+.text-muted  { color: var(--apple-secondary-label); }
+.text-dim    { color: var(--apple-tertiary-label); }
 
-/* ── Anime Coastal Buttons ───────────────────────────────────────────────── */
-.cyber-btn {
+/* ── Apple Liquid Glass Capsule Buttons ──────────────────────────────────── */
+.cyber-btn, .glass-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--anime-sky);
-  border: 1px solid var(--anime-border);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--apple-label);
+  border: 1px solid var(--glass-border);
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
@@ -189,198 +233,204 @@ h1, h2, h3, h4, .font-display {
   text-decoration: none;
   outline: none;
   user-select: none;
-  border-radius: var(--radius-md);
-  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.08);
+  border-radius: var(--radius-full); /* Apple Capsule */
+  box-shadow: var(--glass-specular), 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.cyber-btn:hover {
-  background: #ffffff;
-  color: var(--anime-ocean-deep);
-  border-color: var(--anime-sky);
-  box-shadow: 0 4px 14px var(--anime-glow-sky);
+.cyber-btn:hover, .glass-btn:hover {
+  background: var(--glass-bg-hover);
+  color: var(--apple-blue);
+  border-color: rgba(0, 113, 227, 0.35);
+  box-shadow: var(--glass-specular), 0 6px 18px var(--apple-blue-glow);
   transform: translateY(-1px);
 }
 
-.cyber-btn:active {
-  transform: translateY(0);
+.cyber-btn:active, .glass-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-.cyber-btn-primary {
-  background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
-  color: #ffffff;
-  border: none;
-  font-weight: 700;
-  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.28);
+/* Primary Glass Action (Apple System Blue) */
+.cyber-btn-primary, .glass-btn-primary {
+  background: linear-gradient(180deg, #0077ed 0%, #0071e3 100%);
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 4px 14px rgba(0, 113, 227, 0.32);
 }
 
-.cyber-btn-primary:hover {
-  background: linear-gradient(135deg, #0369a1 0%, #0f766e 100%);
-  color: #ffffff;
-  box-shadow: 0 6px 22px rgba(2, 132, 199, 0.38);
+.cyber-btn-primary:hover, .glass-btn-primary:hover {
+  background: linear-gradient(180deg, #1a88ff 0%, #0077ed 100%);
+  color: #ffffff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.50), 0 6px 20px rgba(0, 113, 227, 0.45);
+  transform: translateY(-1px);
 }
 
-.cyber-btn-secondary {
-  background: rgba(255, 255, 255, 0.8);
-  color: var(--anime-text-muted);
-  border: 1px solid var(--anime-border);
+/* Secondary Translucent Button */
+.cyber-btn-secondary, .glass-btn-secondary {
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--apple-label);
+  border: 1px solid var(--glass-border);
 }
 
-.cyber-btn-secondary:hover {
-  background: #ffffff;
-  color: var(--anime-sky);
-  border-color: var(--anime-sky);
-  box-shadow: 0 4px 12px var(--anime-glow-sky);
+.cyber-btn-secondary:hover, .glass-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.90);
+  color: var(--apple-blue);
+  border-color: rgba(0, 113, 227, 0.35);
 }
 
-.cyber-btn-danger {
-  background: rgba(225, 29, 72, 0.08);
-  color: #be123c;
-  border: 1px solid rgba(225, 29, 72, 0.25);
+/* Destructive / Alert Button */
+.cyber-btn-danger, .glass-btn-danger {
+  background: rgba(255, 59, 48, 0.10);
+  color: var(--apple-red);
+  border: 1px solid rgba(255, 59, 48, 0.25);
 }
 
-.cyber-btn-danger:hover {
-  background: rgba(225, 29, 72, 0.16);
-  color: #9f1239;
-  box-shadow: 0 4px 14px var(--anime-glow-red);
+.cyber-btn-danger:hover, .glass-btn-danger:hover {
+  background: rgba(255, 59, 48, 0.18);
+  color: #d70015;
+  box-shadow: 0 4px 14px var(--apple-red-glow);
 }
 
 .cyber-btn-amber {
-  background: rgba(217, 119, 6, 0.08);
-  color: #b45309;
-  border: 1px solid rgba(217, 119, 6, 0.25);
+  background: rgba(255, 149, 0, 0.10);
+  color: #c97500;
+  border: 1px solid rgba(255, 149, 0, 0.25);
 }
 
 .cyber-btn-amber:hover {
-  background: rgba(217, 119, 6, 0.16);
-  box-shadow: 0 4px 14px var(--anime-glow-amber);
+  background: rgba(255, 149, 0, 0.18);
+  box-shadow: 0 4px 14px var(--apple-orange-glow);
 }
 
 .cyber-btn-icon {
   padding: 8px;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
 }
 
-/* ── Anime Clean Form Inputs ─────────────────────────────────────────────── */
-.cyber-input {
+/* ── Apple Liquid Glass Form Inputs ──────────────────────────────────────── */
+.cyber-input, .glass-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid var(--anime-border);
-  color: var(--anime-text-main);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: var(--apple-label);
   font-family: var(--font-sans);
   font-size: 13.5px;
   padding: 10px 14px;
   border-radius: var(--radius-md);
   outline: none;
   transition: all var(--transition-fast);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
-.cyber-input:focus {
+.cyber-input:focus, .glass-input:focus {
   background: #ffffff;
-  border-color: var(--anime-sky);
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+  border-color: var(--apple-blue);
+  box-shadow: 0 0 0 3.5px rgba(0, 113, 227, 0.24), inset 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.cyber-input::placeholder {
-  color: var(--anime-text-dim);
+.cyber-input::placeholder, .glass-input::placeholder {
+  color: var(--apple-tertiary-label);
 }
 
-/* ── Frosted Glass Cards & Panels ────────────────────────────────────────── */
-.cyber-card {
-  background: var(--anime-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--anime-border-subtle);
-  border-radius: var(--radius-lg);
+/* ── Apple Liquid Glass Cards & Panels ───────────────────────────────────── */
+.cyber-card, .glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl); /* Continuous curvature squircle feel */
   position: relative;
-  transition: all var(--transition-fast);
-  box-shadow: var(--anime-card-shadow);
+  transition: all var(--transition-spring);
+  box-shadow: var(--glass-shadow), var(--glass-specular);
+  overflow: hidden;
+}
+
+/* Ambient Specular Highlight Sheen on Card Top */
+.cyber-card::before, .glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 75% 35% at 50% 0%,
+    rgba(255, 255, 255, 0.45) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .cyber-card-glow {
-  box-shadow: var(--anime-card-shadow);
+  box-shadow: var(--glass-shadow);
 }
 
-.cyber-card:hover {
-  background: var(--anime-card-hover);
-  border-color: rgba(14, 165, 233, 0.35);
-  box-shadow: var(--anime-card-shadow-hover);
+.cyber-card:hover, .glass-panel:hover {
+  background: var(--glass-bg-hover);
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--glass-shadow-hover), var(--glass-specular);
 }
 
-/* Subtle corner highlight instead of harsh cyber borders */
-.cyber-corners::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 14px; height: 14px;
-  border-top: 2px solid var(--anime-sky);
-  border-left: 2px solid var(--anime-sky);
-  border-top-left-radius: var(--radius-lg);
-  pointer-events: none;
-  opacity: 0.5;
-}
-
+/* Subtle corner highlight removed in favor of pristine continuous glass */
+.cyber-corners::before,
 .cyber-corners::after {
-  content: '';
-  position: absolute;
-  bottom: 0; right: 0;
-  width: 14px; height: 14px;
-  border-bottom: 2px solid var(--anime-turquoise);
-  border-right: 2px solid var(--anime-turquoise);
-  border-bottom-right-radius: var(--radius-lg);
-  pointer-events: none;
-  opacity: 0.5;
+  display: none;
 }
 
-/* ── Status Badges (Soft Pastel Pills) ────────────────────────────────────── */
-.cyber-badge {
+/* ── Apple Status Badges & Pills ─────────────────────────────────────────── */
+.cyber-badge, .glass-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 5px 12px;
   font-size: 11.5px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
   border-radius: var(--radius-full);
   border: 1px solid transparent;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .cyber-badge-green {
-  background: rgba(13, 148, 136, 0.1);
-  color: #0f766e;
-  border-color: rgba(13, 148, 136, 0.25);
+  background: rgba(52, 199, 89, 0.12);
+  color: #1f7a37;
+  border-color: rgba(52, 199, 89, 0.28);
 }
 
 .cyber-badge-amber {
-  background: rgba(217, 119, 6, 0.1);
-  color: #b45309;
-  border-color: rgba(217, 119, 6, 0.25);
+  background: rgba(255, 149, 0, 0.12);
+  color: #ad6200;
+  border-color: rgba(255, 149, 0, 0.28);
 }
 
 .cyber-badge-cyan {
-  background: rgba(2, 132, 199, 0.1);
-  color: #0369a1;
-  border-color: rgba(2, 132, 199, 0.25);
+  background: rgba(0, 113, 227, 0.12);
+  color: #0071e3;
+  border-color: rgba(0, 113, 227, 0.28);
 }
 
 .cyber-badge-red {
-  background: rgba(225, 29, 72, 0.1);
-  color: #be123c;
-  border-color: rgba(225, 29, 72, 0.25);
+  background: rgba(255, 59, 48, 0.12);
+  color: #d70015;
+  border-color: rgba(255, 59, 48, 0.28);
 }
 
-/* ── Pulse Status Dots ───────────────────────────────────────────────────── */
+/* ── Apple Pulse Status Dots ─────────────────────────────────────────────── */
 .pulse-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 6px #10b981;
+  background-color: var(--apple-green);
+  box-shadow: 0 0 8px rgba(52, 199, 89, 0.6);
   animation: pulse-soft 2s infinite ease-in-out;
 }
 
@@ -388,8 +438,8 @@ h1, h2, h3, h4, .font-display {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background-color: #ef4444;
-  box-shadow: 0 0 6px #ef4444;
+  background-color: var(--apple-red);
+  box-shadow: 0 0 8px rgba(255, 59, 48, 0.6);
   animation: pulse-soft 1.2s infinite ease-in-out;
 }
 
@@ -398,7 +448,7 @@ h1, h2, h3, h4, .font-display {
   50%       { opacity: 0.45; transform: scale(0.85); }
 }
 
-/* ── Light Vignette Overlay (Replaces CRT) ───────────────────────────────── */
+/* ── Apple Ambient Optical Lens Vignette ─────────────────────────────────── */
 .crt-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -407,14 +457,14 @@ h1, h2, h3, h4, .font-display {
   z-index: 9999;
   background: radial-gradient(
     ellipse at center,
-    transparent 65%,
-    rgba(2, 132, 199, 0.08) 100%
+    transparent 60%,
+    rgba(10, 11, 16, 0.12) 100%
   );
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .crt-active {
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 /* ── Subtle Floating & Hover Effects ─────────────────────────────────────── */
@@ -427,24 +477,38 @@ h1, h2, h3, h4, .font-display {
   animation: soft-float 1.8s ease-in-out infinite;
 }
 
-/* ── Modal Backdrops (Frosted Summer Blur) ───────────────────────────────── */
-.cyber-modal-backdrop {
+/* ── Apple Liquid Glass Modal Backdrops ──────────────────────────────────── */
+.cyber-modal-backdrop, .glass-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(10, 11, 16, 0.45);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: appleSheetIn 0.26s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to   { opacity: 1; transform: scale(1); }
+@keyframes appleSheetIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Accessibility: Reduce Transparency Fallback ─────────────────────────── */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-bg: #ffffff;
+    --glass-bg-hover: #f5f5f7;
+    --glass-border: rgba(0, 0, 0, 0.15);
+    --glass-blur: none;
+  }
+  .cyber-card, .glass-panel, .cyber-modal-backdrop {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
 }
 
 /* ── Utility Layout ──────────────────────────────────────────────────────── */

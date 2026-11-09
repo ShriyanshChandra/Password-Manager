@@ -74,31 +74,27 @@ This document outlines architectural mandates, security protocols, and operation
 ---
 
 ## 5. UI / UX & 3D Three.js Design System
-- **Theme**: Anime Beach Sunset — warm, chill, cinematic ocean landscape with immersive full-viewport Three.js beach scene background.
-- **3D Scene** (`src/components/BeachScene3D.tsx`):
-  - Sky gradient: deep indigo-purple zenith → fiery crimson mid-sky → golden horizon
-  - Animated sun disc with soft halo glow (lower-left)
-  - Dramatic crimson/orange cloud layers drifting across the sky
-  - Stars visible at the upper sky
-  - Dark mountain/hill silhouettes with distant city lights
-  - Animated ocean plane (sine-wave vertices, 1.5 Hz), orange specular reflection
-  - Sunset reflection stripe on ocean surface (additive blending)
-  - Sandy beach foreground, rocky boulders, driftwood log
-  - Palm tree silhouettes (dark `#080415`) leaning in the breeze, right side
-  - Low bush silhouettes scattered at beach edge
-  - White foam particle system at shore
-  - State reactions: BREACH → blood-red sun/ocean, UNLOCKING → pulsing gold glow
+- **Theme**: Apple Liquid Glass (2025 HIG / macOS Tahoe / iOS 26 / visionOS) — translucent physical optical glass materials with real-time refraction, dispersion, and specular lighting.
+- **3D Scene** (`src/components/AppleLiquidGlass3D.tsx`):
+  - Procedural physical liquid glass surface with real-time Snell's Law refraction and Index of Refraction (IOR 1.48 - 1.52).
+  - Chromatic dispersion: physical separation of Red, Green, and Blue light wavelengths producing authentic spectral prism fringes along curved glass contours.
+  - Geometry-responsive specular highlights & silhouette rim sheen: tracks user pointer with silky spring interpolation (`lerp`).
+  - Apple Studio environment: Deep space titanium (`#0a0b10`) transitioning to subtle sapphire blue and celestial violet ambient caustic orbs.
+  - State reactions: BREACH → crimson optical refraction warning, UNLOCKING → luminous iris blue resonance pulse.
 - **Palette**:
-  - Void Indigo: `#0d0520`, `#100825`
-  - Sunset Gold: `#ffb800`, glow `rgba(255,184,0,0.38)`
-  - Sunset Orange: `#e85c00`, glow `rgba(232,92,0,0.38)`
-  - Sunset Crimson: `#cc2200`
-  - Ocean Blue: `#0a3d62`
-  - Warm Sand: `#c8885a`
-  - Silhouette: `#080415`
-  - Alert Red: `#ff3344`
-- **Typography**: `JetBrains Mono`, `Share Tech Mono`, `Orbitron` display.
-- **Feedback**: Synthesized Web Audio sound effects, warm radial vignette overlay (toggleable), real-time password strength / crack time estimators.
+  - Apple System Blue: `#0071e3`, hover `#0077ed`, active `#0062c4`
+  - Apple System Indigo: `#5856d6`
+  - Apple System Purple: `#af52de`
+  - Apple System Green: `#34c759`
+  - Apple System Orange: `#ff9500`
+  - Apple System Red: `#ff3b30`
+  - Primary Label: `#1d1d1f`
+  - Secondary Label: `#6e6e73`
+  - Tertiary Label: `#86868b`
+  - Translucent Glass Surfaces: `rgba(255, 255, 255, 0.75)` with `backdrop-filter: blur(28px) saturate(190%) brightness(104%)`
+  - Specular Highlights: `inset 0 1px 0 rgba(255, 255, 255, 0.85)`
+- **Typography**: Apple San Francisco font stack (`-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif`), with `SF Mono` / `JetBrains Mono` for cryptograms and hashes.
+- **Feedback**: Synthesized Web Audio feedback, ambient optical lens vignette, real-time password strength estimators.
 
 ---
 

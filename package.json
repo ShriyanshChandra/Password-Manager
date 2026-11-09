@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc && vite build",
+    "build:extension": "vite build --config extension/vite.config.ts",
+    "dev:extension": "vite build --config extension/vite.config.ts --watch",
+    "build:all": "npm run build && npm run build:extension",
     "create-user": "node scripts/create-user.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
@@ -20,6 +23,7 @@
     "three": "^0.187.0"
   },
   "devDependencies": {
+    "@types/chrome": "^0.3.7",
     "@types/node": "^24.19.2",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",

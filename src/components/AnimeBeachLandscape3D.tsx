@@ -2,16 +2,17 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 /**
- * Peaceful Anime Summer Beach Ocean Simulation
+ * Anime Beach Landscape — Peaceful Ocean Animation
  *
- * Technical references synthesized:
- * 1. victorzakharov--beautiful-water: Clear turquoise shallow-water absorption, caustics, sun glints
- * 2. threejs.org/examples/?q=water: Flow direction, normal perturbation, specular reflections
- * 3. askalice.github.io/threejs-worldgen/water: Gerstner wave trochoids, continuous shoreline reach & retreat
+ * Design philosophy: Let the hand-painted artwork breathe. The shader adds
+ * gentle, dreamy wave motion and light play *over* the illustration rather
+ * than replacing its colors with procedural gradients. Only the ocean
+ * moves; everything else stays still.
  *
- * Behavior:
- * - Still anime beach landscape (grassland, wildflowers, sky, clouds, dry beach sand).
- * - Only the ocean waves and shoreline foam animate continuously.
+ * Mask channels (water-mask.png):
+ *   R = water region (0 = land/sky, 1 = ocean)
+ *   G = shoreline band (1 = waterline zone)
+ *   B = depth (0 = shallow shore, 1 = deep offshore)
  */
 export const AnimeBeachLandscape3D: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -23,11 +24,11 @@ export const AnimeBeachLandscape3D: React.FC = () => {
     let width = container.clientWidth || window.innerWidth;
     let height = container.clientHeight || window.innerHeight;
 
-    // ── 1. Scene & Orthographic Full-Screen Camera ────────────────────────────
+    // ── Scene & Camera ──────────────────────────────────────────────────────
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-    // ── 2. High-Performance Renderer ──────────────────────────────────────────
+    // ── Renderer ────────────────────────────────────────────────────────────
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       powerPreference: 'high-performance',
@@ -37,7 +38,7 @@ export const AnimeBeachLandscape3D: React.FC = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // ── 3. Texture Loading ────────────────────────────────────────────────────
+    // ── Textures ────────────────────────────────────────────────────────────
     const texLoader = new THREE.TextureLoader();
 
     const beachTexture = texLoader.load('/images/anime-beach.png', (tex) => {
@@ -56,7 +57,7 @@ export const AnimeBeachLandscape3D: React.FC = () => {
       tex.wrapT = THREE.ClampToEdgeWrapping;
     });
 
-    // ── 4. Shader Setup ───────────────────────────────────────────────────────
+    // ── Uniforms ────────────────────────────────────────────────────────────
     const uniforms = {
       uTexture: { value: beachTexture },
       uMask: { value: maskTexture },
@@ -65,7 +66,8 @@ export const AnimeBeachLandscape3D: React.FC = () => {
       uImageResolution: { value: new THREE.Vector2(1376, 768) },
     };
 
-    const vertexShader = `
+    // ── Vertex Shader ───────────────────────────────────────────────────────
+    const vertexShader = /* glsl */ `
       varying vec2 vUv;
       void main() {
         vUv = uv;
@@ -73,181 +75,219 @@ export const AnimeBeachLandscape3D: React.FC = () => {
       }
     `;
 
-    const fragmentShader = `
+    // ── Fragment Shader ─────────────────────────────────────────────────────
+    const fragmentShader = /* glsl */ `
+      precision highp float;
+
       uniform sampler2D uTexture;
       uniform sampler2D uMask;
-      uniform float uTime;
-      uniform vec2 uResolution;
-      uniform vec2 uImageResolution;
+      uniform float     uTime;
+      uniform vec2      uResolution;
+      uniform vec2      uImageResolution;
+
       varying vec2 vUv;
 
-      // Cover-mode aspect ratio mapping
-      vec2 getCoverUv(vec2 uv, vec2 screenRes, vec2 imageRes) {
-        float screenAspect = screenRes.x / screenRes.y;
-        float imageAspect = imageRes.x / imageRes.y;
-        vec2 newUv = uv;
-        if (screenAspect > imageAspect) {
-          float scale = imageAspect / screenAspect;
-          newUv.y = (uv.y - 0.5) * scale + 0.5;
+      // ════════════════════════════════════════════════════════════════════════
+      // Utility: cover-mode UV (like CSS object-fit: cover)
+      // ════════════════════════════════════════════════════════════════════════
+      vec2 coverUV(vec2 uv, vec2 screen, vec2 image) {
+        float sa = screen.x / screen.y;
+        float ia = image.x  / image.y;
+        vec2 o = uv;
+        if (sa > ia) {
+          o.y = (uv.y - 0.5) * (ia / sa) + 0.5;
         } else {
-          float scale = screenAspect / imageAspect;
-          newUv.x = (uv.x - 0.5) * scale + 0.5;
+          o.x = (uv.x - 0.5) * (sa / ia) + 0.5;
         }
-        return newUv;
+        return o;
       }
 
-      // Procedural noise for natural anime foam contours
-      float hash(vec2 p) {
-        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+      // ════════════════════════════════════════════════════════════════════════
+      // Noise — value noise with smooth quintic interpolation
+      // ════════════════════════════════════════════════════════════════════════
+      float hash21(vec2 p) {
+        vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+        p3 += dot(p3, p3.yzx + 33.33);
+        return fract((p3.x + p3.y) * p3.z);
       }
 
-      float noise(vec2 p) {
+      float vnoise(vec2 p) {
         vec2 i = floor(p);
         vec2 f = fract(p);
-        f = f * f * (3.0 - 2.0 * f);
-        float a = hash(i);
-        float b = hash(i + vec2(1.0, 0.0));
-        float c = hash(i + vec2(0.0, 1.0));
-        float d = hash(i + vec2(1.0, 1.0));
-        return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+        vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0); // quintic
+        return mix(
+          mix(hash21(i),                hash21(i + vec2(1, 0)), u.x),
+          mix(hash21(i + vec2(0, 1)),   hash21(i + vec2(1, 1)), u.x),
+          u.y
+        );
       }
 
-      float fbm(vec2 p) {
+      float fbm3(vec2 p) {
         float v = 0.0;
-        v += 0.5000 * noise(p); p *= 2.02;
-        v += 0.2500 * noise(p); p *= 2.03;
-        v += 0.1250 * noise(p);
+        float a = 0.5;
+        mat2  r = mat2(0.8, 0.6, -0.6, 0.8); // rotation between octaves
+        for (int i = 0; i < 3; i++) {
+          v += a * vnoise(p);
+          p  = r * p * 2.0 + 4.3;
+          a *= 0.5;
+        }
         return v;
       }
 
-      // Gerstner Wave (Trochoidal displacement)
-      vec2 gerstnerWave(vec2 p, vec2 dir, float steepness, float wavelength, float speed, float time) {
-        float k = 6.28318 / wavelength;
-        float f = k * (dot(dir, p) - speed * time);
-        float a = steepness / k;
-        return vec2(
-          dir.x * (a * cos(f)),
-          dir.y * (a * cos(f))
-        );
+      float fbm5(vec2 p) {
+        float v = 0.0;
+        float a = 0.5;
+        mat2  r = mat2(0.8, 0.6, -0.6, 0.8);
+        for (int i = 0; i < 5; i++) {
+          v += a * vnoise(p);
+          p  = r * p * 2.0 + 4.3;
+          a *= 0.5;
+        }
+        return v;
       }
 
+      // ════════════════════════════════════════════════════════════════════════
+      // Main
+      // ════════════════════════════════════════════════════════════════════════
       void main() {
-        vec2 uv = getCoverUv(vUv, uResolution, uImageResolution);
-        vec2 clampedUv = clamp(uv, 0.001, 0.999);
+        float t = uTime;
 
-        vec4 originalColor = texture2D(uTexture, clampedUv);
-        vec4 maskData = texture2D(uMask, clampedUv);
+        vec2 uv  = coverUV(vUv, uResolution, uImageResolution);
+        vec2 cuv = clamp(uv, 0.001, 0.999);
 
-        float waterMask  = maskData.r;   // 1.0 = ocean, 0.0 = still land/sky
-        float shoreBand  = maskData.g;   // 1.0 = shoreline waterline zone
-        float shoreDepth = maskData.b;   // 0.0 = shallow shore, 1.0 = deep water
+        vec4 orig = texture2D(uTexture, cuv);
+        vec4 mask = texture2D(uMask,    cuv);
 
-        // Outside water region: render the untouched still anime illustration
-        if (waterMask < 0.005) {
-          gl_FragColor = originalColor;
+        float water = mask.r;           // ocean region
+        float shore = mask.g;           // shoreline foam band
+        float depth = mask.b;           // 0 shallow → 1 deep
+
+        // Land / sky: pass through untouched
+        if (water < 0.01) {
+          gl_FragColor = orig;
           return;
         }
 
-        // ── 1. Wave Travel Directions ──────────────────────────────────────────
-        // Primary ocean swell rolls from deep sea towards the beach
-        vec2 swellDir = normalize(vec2(-0.78, -0.42));
-        vec2 crestDir = vec2(-swellDir.y, swellDir.x); // Perpendicular crest line
+        // ────────────────────────────────────────────────────────────────────
+        // 1. GENTLE UV DISTORTION — makes the painted waves feel alive
+        //    Key insight: distort the UV *sample* position of the original
+        //    artwork, so the illustrated colors flow naturally rather than
+        //    being overwritten by procedural flat gradients.
+        // ────────────────────────────────────────────────────────────────────
 
-        // Perspective scaling: near horizon waves are tighter; near beach they expand
-        float perspective = mix(0.5, 1.35, clamp(1.0 - clampedUv.y * 1.5, 0.0, 1.0));
+        // Wave direction: rolls toward shore (upper-left to lower-right in UV)
+        vec2 waveDir = normalize(vec2(0.75, 0.50));
 
-        // ── 2. Gerstner Waves Superposition ────────────────────────────────────
-        vec2 disp1 = gerstnerWave(clampedUv * perspective, swellDir, 0.022, 0.085, 0.038, uTime);
-        vec2 disp2 = gerstnerWave(clampedUv * perspective, normalize(vec2(-0.65, -0.55)), 0.015, 0.048, 0.052, uTime);
-        vec2 disp3 = gerstnerWave(clampedUv * perspective, normalize(vec2(-0.85, -0.30)), 0.011, 0.026, 0.075, uTime);
+        // Layered slow distortion (large gentle sway)
+        float n1 = vnoise(cuv * 8.0  + waveDir * t * 0.12);
+        float n2 = vnoise(cuv * 16.0 - waveDir * t * 0.18 + 3.7);
+        float n3 = vnoise(cuv * 32.0 + vec2(t * 0.08, -t * 0.14) + 7.1);
 
-        vec2 totalDisp = (disp1 + disp2 + disp3) * waterMask * perspective;
-        vec2 displacedUv = clamp(clampedUv + totalDisp, 0.001, 0.999);
+        // Distortion magnitude: stronger in deep water, very gentle at shore
+        float distStrength = mix(0.003, 0.012, smoothstep(0.0, 0.7, depth));
+        // Reduce distortion near mask boundary for clean transition
+        distStrength *= smoothstep(0.01, 0.15, water);
 
-        // ── 3. Anime Color Palette & Smooth Depth Transitions ──────────────────
-        // Shallow clear turquoise (near shoreline)
-        vec3 shallowTurquoise = vec3(0.18, 0.86, 0.82);
-        // Mid-water tropical cerulean
-        vec3 midCerulean      = vec3(0.06, 0.62, 0.88);
-        // Deep offshore sapphire blue (towards horizon)
-        vec3 deepSapphire     = vec3(0.02, 0.32, 0.68);
+        vec2 distort = vec2(
+          (n1 - 0.5) * 2.0 + (n3 - 0.5) * 0.6,
+          (n2 - 0.5) * 2.0 + (n3 - 0.5) * 0.6
+        ) * distStrength;
 
-        // Smooth color transition based on shoreline depth & horizon distance
-        float depthGrad = clamp(shoreDepth * 1.35 + (clampedUv.y - 0.48) * 0.8, 0.0, 1.0);
-        vec3 animeWaterColor = mix(shallowTurquoise, midCerulean, smoothstep(0.05, 0.45, depthGrad));
-        animeWaterColor = mix(animeWaterColor, deepSapphire, smoothstep(0.45, 0.95, depthGrad));
+        vec2 sampUV = clamp(cuv + distort, 0.001, 0.999);
+        vec3 col = texture2D(uTexture, sampUV).rgb;
 
-        // Blend with underlying artwork so painted sandy shallow bed shows naturally
-        vec4 baseTexture = texture2D(uTexture, displacedUv);
-        vec3 waterComposite = mix(baseTexture.rgb, animeWaterColor, 0.45 + depthGrad * 0.35);
+        // ────────────────────────────────────────────────────────────────────
+        // 2. SUBTLE COLOR ENHANCEMENT — deepen the illustrated water tones
+        //    instead of replacing them. Push blues a touch, add depth haze.
+        // ────────────────────────────────────────────────────────────────────
 
-        // ── 4. Dancing Sunlight Caustics in Shallow Turquoise Water ────────────
-        // (Reference 1: victorzakharov--beautiful-water)
-        float causticsP1 = sin(dot(clampedUv, swellDir) * 65.0 - uTime * 2.2) * 
-                           cos(dot(clampedUv, crestDir) * 55.0 + uTime * 1.8);
-        float causticsP2 = sin(dot(clampedUv, crestDir) * 80.0 - uTime * 1.6) * 
-                           cos(dot(clampedUv, swellDir) * 45.0 + uTime * 2.4);
-        float caustics = max(0.0, causticsP1 + causticsP2) * 0.12 * (1.0 - smoothstep(0.1, 0.65, shoreDepth));
-        waterComposite += vec3(0.12, 0.35, 0.38) * caustics * waterMask;
+        // Gentle blue deepening in offshore areas
+        vec3 deepTint = vec3(0.02, 0.08, 0.18);
+        float deepBlend = depth * 0.22 * water;
+        col = col - deepTint * deepBlend;
+        // Ensure colors don't go negative
+        col = max(col, vec3(0.0));
 
-        // ── 5. Continuous Shoreline Foam Wash (Tidal Reach & Retreat) ──────────
-        // (Reference 3: askalice.github.io/threejs-worldgen/water/)
-        // Peaceful tidal ocean rhythm (~4.8 second wave cycle)
-        float tidalTime = uTime * 1.3;
-        float tideCycle = sin(tidalTime); // -1.0 (retreated) to +1.0 (reached)
+        // Very subtle warm-teal lift in shallow areas (turquoise pop)
+        float shallowLift = (1.0 - smoothstep(0.0, 0.35, depth)) * water * 0.06;
+        col += vec3(-0.01, 0.03, 0.04) * shallowLift;
 
-        // As wave reaches up the beach (tideCycle > 0): foam surges smoothly over sand
-        // As wave retreats (tideCycle < 0): water recedes leaving a wet sand sheen
-        float reachPhase   = smoothstep(-0.4, 0.85, tideCycle);
-        float retreatPhase = smoothstep(0.85, -0.3, tideCycle);
+        // ────────────────────────────────────────────────────────────────────
+        // 3. SHORELINE FOAM — the white wash advancing and retreating
+        //    on the beach, with lacy organic edges.
+        // ────────────────────────────────────────────────────────────────────
 
-        // Dynamic shoreline foam contour with natural lacy edge
-        float shoreWaveOffset = sin(dot(clampedUv, crestDir) * 35.0 + uTime * 0.8) * 0.08;
-        float shoreFoamBand = smoothstep(0.15, 0.85, shoreBand + shoreWaveOffset);
+        // Tidal rhythm: ~5 second cycle, smooth sinusoidal
+        float tideA = sin(t * 1.20) * 0.5 + 0.5;   // 0→1→0 cycle
+        float tideB = sin(t * 0.85 + 1.9) * 0.5 + 0.5; // offset secondary
 
-        float foamNoise = fbm(clampedUv * 65.0 + vec2(tideCycle * 0.15, uTime * 0.2));
-        float dynamicShoreFoam = smoothstep(0.35, 0.65, shoreFoamBand * reachPhase + foamNoise * 0.35 * shoreBand);
-
-        // Thin wet sand sheen when wave retreats
-        float wetSheen = shoreBand * retreatPhase * (0.35 + foamNoise * 0.25);
-
-        // ── 6. Rolling Wave Crests (Breaking Foam Lines) ────────────────────────
-        float waveDist = dot(clampedUv, swellDir) * 5.2 * perspective;
-        
-        // Breaker 1: Main rolling wave crest
-        float rollCycle1 = fract(waveDist - uTime * 0.26);
-        float crest1 = smoothstep(0.87, 0.94, rollCycle1) * (1.0 - smoothstep(0.96, 0.995, rollCycle1));
-        float crestNoise1 = fbm(clampedUv * 85.0 + vec2(uTime * 0.4, 0.0));
-        crest1 = smoothstep(0.38, 0.72, crest1 + crestNoise1 * 0.25 * crest1);
-
-        // Breaker 2: Secondary swell
-        float rollCycle2 = fract(waveDist * 1.65 - uTime * 0.36 + 0.45);
-        float crest2 = smoothstep(0.89, 0.95, rollCycle2) * (1.0 - smoothstep(0.97, 1.0, rollCycle2));
-        crest2 = smoothstep(0.42, 0.76, crest2 + crestNoise1 * 0.2 * crest2);
-
-        // ── 7. Soft Sunlight Specular Reflections ──────────────────────────────
-        // (Reference 2: threejs.org/examples/?q=water)
-        float waveSlope = disp1.x + disp2.y;
-        float sunGlint = pow(max(0.0, sin(dot(clampedUv, swellDir) * 38.0 * perspective - uTime * 2.5 + waveSlope * 8.0)), 9.0) * 0.28 * waterMask;
-        waterComposite += vec3(0.95, 0.98, 1.0) * sunGlint;
-
-        // ── 8. Foam Compositing ────────────────────────────────────────────────
-        vec3 pureFoamColor = vec3(0.98, 1.0, 1.0);
-        float totalFoam = clamp(
-          dynamicShoreFoam * 0.9 + 
-          wetSheen * 0.5 + 
-          crest1 * 0.85 + 
-          crest2 * 0.65, 
-          0.0, 1.0
+        // Foam noise: slowly drifting lacy pattern
+        float foamNoise = fbm5(
+          cuv * vec2(55.0, 40.0) + vec2(t * 0.06, -t * 0.04)
         );
 
-        vec3 finalWater = mix(waterComposite, pureFoamColor, totalFoam * waterMask);
+        // Shore-parallel wiggly contour
+        float wiggle = sin(cuv.x * 50.0 + t * 0.7) * 0.04
+                     + sin(cuv.x * 85.0 - t * 0.5) * 0.025;
 
-        // ── 9. Seamless Edge Blending ──────────────────────────────────────────
-        gl_FragColor = mix(originalColor, vec4(finalWater, 1.0), waterMask);
+        // Foam visibility: combine tidal advance with shore mask
+        float foamEdge = shore + wiggle;
+        float foamMask = smoothstep(0.10, 0.70, foamEdge * (tideA * 0.7 + tideB * 0.3)
+                                                  + foamNoise * 0.25 * shore);
+
+        // Soft foam: white with very slight warm tint for sunlit sand
+        vec3 foamColor = vec3(0.97, 0.99, 1.00);
+        // Foam opacity: stronger at the leading edge, softer behind
+        float foamAlpha = foamMask * 0.85 * shore;
+
+        // Wet sand sheen when retreating
+        float retreatPhase = smoothstep(0.6, 0.0, tideA);
+        float wetSand = shore * retreatPhase * 0.15 * (0.5 + foamNoise * 0.5);
+
+        col = mix(col, foamColor, foamAlpha);
+        // Wet sheen: slightly darken + saturate the sand
+        col = mix(col, col * vec3(0.85, 0.88, 0.92), wetSand);
+
+        // ────────────────────────────────────────────────────────────────────
+        // 4. SINGLE ROLLING WAVE — one clean white crest line that
+        //    continuously travels toward shore, with a soft foam trail
+        //    behind it and a noisy organic edge.
+        // ────────────────────────────────────────────────────────────────────
+
+        float wProj = dot(cuv, waveDir);
+
+        // Single wave: slow travel toward shore, ~12 second full cycle
+        float wavePhase = fract(wProj * 3.5 - t * 0.055);
+
+        // Shape the wave: bright crest peak with soft trailing foam
+        //   0.0 ──────── 0.82 (nothing) ── 0.88 (foam trail) ── 0.94 (crest peak) ── 1.0
+        float crestPeak  = smoothstep(0.90, 0.96, wavePhase) * (1.0 - smoothstep(0.97, 1.00, wavePhase));
+        float foamTrail  = smoothstep(0.80, 0.90, wavePhase) * (1.0 - smoothstep(0.90, 0.97, wavePhase));
+
+        // Organic edge: noise breaks up the perfectly straight line
+        float edgeNoise = fbm3(cuv * 50.0 + vec2(t * 0.08, 0.0));
+        crestPeak = smoothstep(0.25, 0.65, crestPeak + edgeNoise * 0.20 * crestPeak);
+        foamTrail = smoothstep(0.20, 0.55, foamTrail + edgeNoise * 0.18 * foamTrail) * 0.4;
+
+        float wave = clamp(crestPeak + foamTrail, 0.0, 1.0);
+
+        // Fade out near shore (shore foam already handles that zone) & near horizon
+        wave *= smoothstep(0.0, 0.15, depth) * (1.0 - smoothstep(0.80, 1.0, depth));
+
+        // Apply as soft translucent white
+        col = mix(col, vec3(1.0), wave * 0.6 * water);
+
+        // ────────────────────────────────────────────────────────────────────
+        // 5. FINAL BLEND — lerp between original and animated water
+        //    Use the water mask with softened edges for seamless transition.
+        // ────────────────────────────────────────────────────────────────────
+
+        float blendMask = smoothstep(0.0, 0.08, water);
+        gl_FragColor = vec4(mix(orig.rgb, col, blendMask), 1.0);
       }
     `;
 
+    // ── Material & Mesh ─────────────────────────────────────────────────────
     const material = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
@@ -260,28 +300,27 @@ export const AnimeBeachLandscape3D: React.FC = () => {
     const quadMesh = new THREE.Mesh(quadGeo, material);
     scene.add(quadMesh);
 
-    // ── 5. Tab Visibility Optimization ────────────────────────────────────────
+    // ── Tab Visibility ──────────────────────────────────────────────────────
     let isTabVisible = true;
     const handleVisibilityChange = () => {
       isTabVisible = document.visibilityState === 'visible';
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // ── 6. Animation Loop ─────────────────────────────────────────────────────
+    // ── Animation Loop ──────────────────────────────────────────────────────
     let animId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
       if (!isTabVisible) return;
-
       uniforms.uTime.value = clock.getElapsedTime();
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // ── 7. Resize Handler ─────────────────────────────────────────────────────
+    // ── Resize ──────────────────────────────────────────────────────────────
     const handleResize = () => {
       if (!container) return;
       width = container.clientWidth || window.innerWidth;
@@ -291,7 +330,7 @@ export const AnimeBeachLandscape3D: React.FC = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    // ── 8. Cleanup ────────────────────────────────────────────────────────────
+    // ── Cleanup ─────────────────────────────────────────────────────────────
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);

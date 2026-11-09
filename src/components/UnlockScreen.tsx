@@ -14,6 +14,7 @@ import {
   Check,
   ArrowLeft,
   KeyRound,
+  Puzzle,
 } from 'lucide-react';
 import { cyberAudio } from '../utils/cyberAudio';
 import { firebaseService } from '../services/firebaseService';
@@ -54,6 +55,11 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isBreach, setIsBreach] = useState(false);
+  const [isExtensionConnect] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('connect_extension') === 'true' || window.location.hash.includes('connect_extension');
+  });
 
   // Helper to complete unlocking & notify parent
   const completeUnlockAndFinish = async (
@@ -284,7 +290,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
         padding: '24px 16px',
       }}
     >
-      {/* Centered Glassmorphic Anime Card */}
+      {/* Centered Apple Liquid Glass Card */}
       <div
         className="cyber-card"
         style={{
@@ -293,17 +299,44 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
           width: '100%',
           maxWidth: step === 'setup_2fa' ? '460px' : '430px',
           padding: '36px 30px',
-          background: 'rgba(255, 255, 255, 0.86)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          border: `1px solid ${isBreach ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255, 255, 255, 0.95)'}`,
+          background: 'rgba(255, 255, 255, 0.78)',
+          backdropFilter: 'blur(32px) saturate(190%) brightness(104%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(190%) brightness(104%)',
+          border: `1px solid ${isBreach ? 'rgba(255, 59, 48, 0.5)' : 'rgba(255, 255, 255, 0.75)'}`,
           boxShadow: isBreach
-            ? '0 16px 40px rgba(239, 68, 68, 0.25)'
-            : '0 20px 50px rgba(14, 116, 144, 0.16), 0 4px 16px rgba(0, 0, 0, 0.04)',
-          borderRadius: '20px',
+            ? '0 16px 40px rgba(255, 59, 48, 0.25)'
+            : '0 24px 60px -8px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+          borderRadius: '24px',
           transition: 'all 0.3s ease',
         }}
       >
+        {/* Extension Connection Request Banner */}
+        {isExtensionConnect && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 14px',
+              marginBottom: '20px',
+              background: 'rgba(255, 184, 0, 0.12)',
+              border: '1px solid rgba(255, 184, 0, 0.45)',
+              color: '#92400e',
+              fontSize: '12px',
+              borderRadius: '12px',
+              boxShadow: '0 4px 14px rgba(255, 184, 0, 0.12)',
+            }}
+          >
+            <Puzzle size={18} style={{ flexShrink: 0, color: '#d97706' }} />
+            <div>
+              <strong style={{ display: 'block', color: '#b45309', fontSize: '12.5px' }}>
+                BROWSER EXTENSION PAIRING REQUEST
+              </strong>
+              Sign in below to unlock and link your vault credentials directly with the extension.
+            </div>
+          </div>
+        )}
+
         {/* Error Notification */}
         {errorMessage && (
           <div
@@ -336,23 +369,23 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                   alignItems: 'center',
                   gap: '8px',
                   padding: '5px 14px',
-                  background: isBreach ? 'rgba(239, 68, 68, 0.1)' : 'rgba(2, 132, 199, 0.1)',
-                  border: `1px solid ${isBreach ? 'rgba(239, 68, 68, 0.3)' : 'rgba(2, 132, 199, 0.25)'}`,
+                  background: isBreach ? 'rgba(255, 59, 48, 0.12)' : 'rgba(0, 113, 227, 0.10)',
+                  border: `1px solid ${isBreach ? 'rgba(255, 59, 48, 0.3)' : 'rgba(0, 113, 227, 0.25)'}`,
                   borderRadius: '9999px',
                   marginBottom: '16px',
                 }}
               >
-                <Waves size={13} color={isBreach ? '#ef4444' : '#0284c7'} />
+                <ShieldCheck size={13} color={isBreach ? '#ff3b30' : '#0071e3'} />
                 <span
                   style={{
                     fontSize: '11px',
                     fontWeight: 700,
-                    color: isBreach ? '#ef4444' : '#0284c7',
-                    letterSpacing: '0.06em',
+                    color: isBreach ? '#ff3b30' : '#0071e3',
+                    letterSpacing: '0.04em',
                     textTransform: 'uppercase',
                   }}
                 >
-                  {isBreach ? 'Access Denied' : 'Zero-Knowledge Coastal Vault'}
+                  {isBreach ? 'Access Denied' : 'Apple Liquid Glass // Zero-Knowledge'}
                 </span>
               </div>
 
@@ -360,9 +393,9 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                 className="font-display"
                 style={{
                   fontSize: '26px',
-                  fontWeight: 800,
-                  color: '#0f172a',
-                  letterSpacing: '-0.02em',
+                  fontWeight: 700,
+                  color: '#1d1d1f',
+                  letterSpacing: '-0.025em',
                   marginBottom: '8px',
                   lineHeight: 1.2,
                 }}
@@ -370,7 +403,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                 Welcome Back
               </h1>
 
-              <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5 }}>
+              <p style={{ fontSize: '13.5px', color: '#6e6e73', lineHeight: 1.5 }}>
                 Sign in with your email and master password to unlock your personal credentials.
               </p>
             </div>
@@ -389,7 +422,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                     fontWeight: 600,
                   }}
                 >
-                  <Mail size={13} color="#0284c7" />
+                  <Mail size={13} color="#0071e3" />
                   <span>EMAIL ADDRESS</span>
                 </label>
                 <input
@@ -416,7 +449,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                       fontWeight: 600,
                     }}
                   >
-                    <Lock size={13} color="#0284c7" />
+                    <Lock size={13} color="#0071e3" />
                     <span>MASTER PASSWORD</span>
                   </label>
                   <button
@@ -425,7 +458,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#0284c7',
+                      color: '#0071e3',
                       fontSize: '11.5px',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -507,12 +540,12 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                   marginBottom: '12px',
                 }}
               >
-                <Smartphone size={13} color="#0284c7" />
+                <Smartphone size={13} color="#0071e3" />
                 <span
                   style={{
                     fontSize: '11px',
                     fontWeight: 700,
-                    color: '#0284c7',
+                    color: '#0071e3',
                     letterSpacing: '0.06em',
                     textTransform: 'uppercase',
                   }}
@@ -606,7 +639,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#0284c7',
+                    color: '#0071e3',
                     fontSize: '11.5px',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -683,7 +716,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                     fontWeight: 600,
                   }}
                 >
-                  <KeyRound size={13} color="#0284c7" />
+                  <KeyRound size={13} color="#0071e3" />
                   <span>ENTER 6-DIGIT CODE TO ACTIVATE</span>
                 </label>
                 <input
@@ -774,12 +807,12 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                   marginBottom: '16px',
                 }}
               >
-                <ShieldCheck size={13} color="#0284c7" />
+                <ShieldCheck size={13} color="#0071e3" />
                 <span
                   style={{
                     fontSize: '11px',
                     fontWeight: 700,
-                    color: '#0284c7',
+                    color: '#0071e3',
                     letterSpacing: '0.06em',
                     textTransform: 'uppercase',
                   }}
@@ -829,7 +862,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                     fontWeight: 600,
                   }}
                 >
-                  <KeyRound size={13} color="#0284c7" />
+                  <KeyRound size={13} color="#0071e3" />
                   <span>6-DIGIT VERIFICATION CODE</span>
                 </label>
                 <input

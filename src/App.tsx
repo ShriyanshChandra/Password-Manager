@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Header } from './components/Header';
-import { AnimeBeachLandscape3D } from './components/AnimeBeachLandscape3D';
+import { AppleLiquidGlass3D } from './components/AppleLiquidGlass3D';
 import { UnlockScreen } from './components/UnlockScreen';
 import { VaultDashboard } from './components/VaultDashboard';
 import { PasswordGeneratorModal } from './components/PasswordGeneratorModal';
@@ -32,10 +32,46 @@ export const App: React.FC = () => {
   const [crtActive, setCrtActive] = useState<boolean>(true);
   const [soundMuted, setSoundMuted] = useState<boolean>(false);
   const [isFirebaseConnected, setIsFirebaseConnected] = useState<boolean>(true);
+  const [extensionSyncNotification, setExtensionSyncNotification] = useState<string | null>(null);
 
-  // Check initial configuration on mount
+  const masterKeyRef = useRef<CryptoKey | null>(null);
+  const vaultBundleRef = useRef<EncryptedVaultBundle | null>(null);
+  const itemsRef = useRef<VaultItem[]>([]);
+
+  useEffect(() => {
+    masterKeyRef.current = masterKey;
+    vaultBundleRef.current = vaultBundle;
+    itemsRef.current = items;
+  }, [masterKey, vaultBundle, items]);
+
+  // Check initial configuration on mount & listen for extension confirmation
   useEffect(() => {
     setIsFirebaseConnected(firebaseService.getStatus().isConfigured);
+
+    const handleExtensionMsg = (event: MessageEvent) => {
+      if (event.data?.type === 'CIPHER_VAULT_SYNC_CONFIRMED' && event.data?.success) {
+        const count = event.data.itemCount || 0;
+        const email = event.data.accountEmail ? ` (${event.data.accountEmail})` : '';
+        setExtensionSyncNotification(`Extension Connected! Synced ${count} credentials${email}.`);
+        cyberAudio.playCopySound();
+        setTimeout(() => setExtensionSyncNotification(null), 5000);
+      } else if (event.data?.type === 'CIPHER_VAULT_EXTENSION_DETECTED') {
+        // Proactively push credentials to extension if already unlocked
+        if (masterKeyRef.current && vaultBundleRef.current) {
+          window.postMessage(
+            {
+              type: 'CIPHER_VAULT_SYNC_PAYLOAD',
+              bundle: vaultBundleRef.current,
+              items: itemsRef.current,
+              accountEmail: firebaseService.getCurrentUser()?.email || undefined,
+            },
+            '*'
+          );
+        }
+      }
+    };
+    window.addEventListener('message', handleExtensionMsg);
+    return () => window.removeEventListener('message', handleExtensionMsg);
   }, []);
 
   // Lock Vault Action
@@ -58,6 +94,21 @@ export const App: React.FC = () => {
     setVaultBundle(bundle);
     setItems(unlockedItems);
     setIsLocked(false);
+
+    // Auto-sync to browser extension if installed
+    try {
+      window.postMessage(
+        {
+          type: 'CIPHER_VAULT_SYNC_PAYLOAD',
+          bundle,
+          items: unlockedItems,
+          accountEmail: firebaseService.getCurrentUser()?.email || undefined,
+        },
+        '*'
+      );
+    } catch {
+      // Ignored
+    }
   };
 
   // Save vault item (add or update)
@@ -78,6 +129,21 @@ export const App: React.FC = () => {
     const newBundle = await vaultStorage.saveVault(updatedItems, masterKey, vaultBundle);
     setVaultBundle(newBundle);
 
+    // Auto-sync updated vault to browser extension
+    try {
+      window.postMessage(
+        {
+          type: 'CIPHER_VAULT_SYNC_PAYLOAD',
+          bundle: newBundle,
+          items: updatedItems,
+          accountEmail: firebaseService.getCurrentUser()?.email || undefined,
+        },
+        '*'
+      );
+    } catch {
+      // Ignored
+    }
+
     // Save individual credential to Firestore users/{userId}/credentials/{credentialId}
     await firebaseService.saveAccountCredential(itemToSave, masterKey);
   };
@@ -90,6 +156,21 @@ export const App: React.FC = () => {
     setItems(updatedItems);
     const newBundle = await vaultStorage.saveVault(updatedItems, masterKey, vaultBundle);
     setVaultBundle(newBundle);
+
+    // Auto-sync updated vault to browser extension
+    try {
+      window.postMessage(
+        {
+          type: 'CIPHER_VAULT_SYNC_PAYLOAD',
+          bundle: newBundle,
+          items: updatedItems,
+          accountEmail: firebaseService.getCurrentUser()?.email || undefined,
+        },
+        '*'
+      );
+    } catch {
+      // Ignored
+    }
 
     // Delete individual credential from Firestore users/{userId}/credentials/{credentialId}
     await firebaseService.deleteAccountCredential(id);
@@ -135,9 +216,9 @@ export const App: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
-      {/* Persistent Living Anime Beach Three.js Scene */}
+      {/* Persistent Apple Liquid Glass Three.js Optical Canvas */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <AnimeBeachLandscape3D />
+        <AppleLiquidGlass3D />
       </div>
 
       {/* Subtle Sunlight Haze overlay if active */}
@@ -198,10 +279,40 @@ export const App: React.FC = () => {
         }}
       />
 
+      {/* Extension Sync Ephemeral Notification */}
+      {extensionSyncNotification && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '24px',
+            zIndex: 9999,
+            padding: '12px 18px',
+            background: 'rgba(16, 8, 37, 0.95)',
+            border: '1px solid #ffb800',
+            borderRadius: '10px',
+            color: '#ffb800',
+            fontFamily: 'monospace',
+            fontSize: '13px',
+            fontWeight: 600,
+            boxShadow: '0 8px 30px rgba(255, 184, 0, 0.35)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            animation: 'fadeIn 0.3s ease-out',
+          }}
+        >
+          <span style={{ fontSize: '16px' }}>⚡</span>
+          <span>{extensionSyncNotification}</span>
+        </div>
+      )}
+
       {/* Browser Extension Modal */}
       <ExtensionModal
         isOpen={isExtensionOpen}
         onClose={() => setIsExtensionOpen(false)}
+        vaultBundle={vaultBundle}
+        items={items}
       />
 
       {/* Item Editor Modal */}
@@ -231,10 +342,10 @@ export const App: React.FC = () => {
         onSelectPassword={
           generatorTargetCallback
             ? (pwd) => {
-                generatorTargetCallback(pwd);
-                setIsGeneratorOpen(false);
-                setGeneratorTargetCallback(null);
-              }
+              generatorTargetCallback(pwd);
+              setIsGeneratorOpen(false);
+              setGeneratorTargetCallback(null);
+            }
             : undefined
         }
       />

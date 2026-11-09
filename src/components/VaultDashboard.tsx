@@ -544,7 +544,7 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                       style={{
                         padding: '12px',
                         cursor: 'pointer',
-                        borderColor: isSelected ? 'var(--anime-sky)' : 'rgba(14, 165, 233, 0.16)',
+                        borderColor: isSelected ? 'var(--apple-blue)' : 'rgba(255, 255, 255, 0.65)',
                         background: isSelected ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.72)',
                         boxShadow: isSelected ? '0 4px 16px rgba(2, 132, 199, 0.15)' : 'none',
                         borderRadius: '12px',
@@ -816,7 +816,7 @@ export const VaultDashboard: React.FC<VaultDashboardProps> = ({
                         fontSize: '16px',
                         fontFamily: 'var(--font-mono)',
                         letterSpacing: showItemPassword ? 'normal' : '0.25em',
-                        color: 'var(--anime-turquoise)',
+                        color: 'var(--apple-blue)',
                         background: 'rgba(13, 148, 136, 0.07)',
                         padding: '10px 14px',
                         border: '1px solid rgba(13, 148, 136, 0.2)',

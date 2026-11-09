@@ -1,14 +1,49 @@
-import React from 'react';
-import { X, Puzzle, Shield, Globe, Terminal, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Puzzle, Shield, Globe, Terminal, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
 import { cyberAudio } from '../utils/cyberAudio';
+import { firebaseService } from '../services/firebaseService';
+import type { VaultItem, EncryptedVaultBundle } from '../types/vault';
 
 interface ExtensionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  vaultBundle?: EncryptedVaultBundle | null;
+  items?: VaultItem[];
 }
 
-export const ExtensionModal: React.FC<ExtensionModalProps> = ({ isOpen, onClose }) => {
+export const ExtensionModal: React.FC<ExtensionModalProps> = ({
+  isOpen,
+  onClose,
+  vaultBundle,
+  items,
+}) => {
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
+
   if (!isOpen) return null;
+
+  const handleSyncToExtension = () => {
+    cyberAudio.playCopySound();
+    if (!vaultBundle) {
+      setSyncFeedback('Unlock your vault first to sync credentials.');
+      return;
+    }
+
+    try {
+      window.postMessage(
+        {
+          type: 'CIPHER_VAULT_SYNC_PAYLOAD',
+          bundle: vaultBundle,
+          items: items || [],
+          accountEmail: firebaseService.getCurrentUser()?.email || undefined,
+        },
+        '*'
+      );
+      setSyncFeedback(`Successfully broadcasted ${items?.length || 0} credentials to CIPHER//VAULT Extension!`);
+      setTimeout(() => setSyncFeedback(null), 4000);
+    } catch (err) {
+      setSyncFeedback(`Sync failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
 
   return (
     <div className="cyber-modal-backdrop">
@@ -115,27 +150,45 @@ export const ExtensionModal: React.FC<ExtensionModalProps> = ({ isOpen, onClose 
           </div>
         </div>
 
-        {/* Extension Scaffold Notice */}
+        {/* Live Extension Sync Action */}
         <div
           style={{
-            padding: '12px 16px',
-            background: 'rgba(13, 148, 136, 0.07)',
-            border: '1px solid rgba(13, 148, 136, 0.22)',
-            borderRadius: '8px',
+            padding: '16px',
+            background: 'rgba(14, 165, 233, 0.08)',
+            border: '1px solid rgba(14, 165, 233, 0.25)',
+            borderRadius: '10px',
             marginBottom: '20px',
-            fontSize: '12px',
           }}
         >
-          <div style={{ color: 'var(--cyber-green)', fontWeight: 700, marginBottom: '4px' }}>
-            DEVELOPMENT ROADMAP
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <div style={{ color: 'var(--cyber-cyan)', fontWeight: 700, fontSize: '13px' }}>
+              DIRECT EXTENSION SYNCHRONIZATION
+            </div>
+            {syncFeedback && (
+              <span style={{ fontSize: '11px', color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <CheckCircle2 size={13} /> {syncFeedback}
+              </span>
+            )}
           </div>
-          <div style={{ color: 'var(--cyber-text-muted)' }}>
-            We have prepared the shared crypto engine and types so the Chrome Extension folder can directly consume `src/crypto/encryption.ts`. As soon as you review the web app, we will generate the full extension package!
-          </div>
+          <p style={{ color: 'var(--cyber-text-muted)', fontSize: '12px', marginBottom: '12px' }}>
+            Transfers your encrypted vault payload and decrypted memory cache directly to your installed CIPHER//VAULT browser extension via client-side bridge.
+          </p>
+          <button
+            onClick={handleSyncToExtension}
+            className="cyber-btn cyber-btn-primary"
+            style={{ width: '100%', justifyContent: 'center' }}
+            disabled={!vaultBundle}
+          >
+            <Zap size={15} />
+            <span>SYNC {items?.length || 0} CREDENTIALS TO EXTENSION</span>
+          </button>
         </div>
 
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <button onClick={onClose} className="cyber-btn cyber-btn-secondary">
+            <span>CLOSE</span>
+          </button>
           <button onClick={onClose} className="cyber-btn cyber-btn-primary">
             <span>CONTINUE IN WEB VAULT</span>
             <ArrowRight size={14} />
