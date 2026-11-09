@@ -55,7 +55,7 @@ export const App: React.FC = () => {
       const cached = sessionStorage.getItem('cipher_active_unlocked_session');
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed?.bundle && Array.isArray(parsed.items)) {
+        if (parsed?.bundle && Array.isArray(parsed.items) && parsed.items.length > 0) {
           setVaultBundle(parsed.bundle);
           setItems(parsed.items);
           setIsLocked(false);
@@ -69,6 +69,8 @@ export const App: React.FC = () => {
             },
             '*'
           );
+        } else {
+          sessionStorage.removeItem('cipher_active_unlocked_session');
         }
       }
     } catch {

@@ -16,9 +16,9 @@ import {
   Puzzle,
 } from 'lucide-react';
 import { cyberAudio } from '../utils/cyberAudio';
-import { firebaseService } from '../services/firebaseService';
+import { firebaseService, type UserProfileDoc } from '../services/firebaseService';
 import { vaultStorage } from '../services/vaultStorage';
-import { deriveAuthHash } from '../crypto/encryption';
+import { deriveAuthHash, deriveKey, encryptVault } from '../crypto/encryption';
 import {
   generateRandomBase32Secret,
   getTOTPUri,
@@ -49,6 +49,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
   const [isCopied, setIsCopied] = useState(false);
   const [totpCode, setTotpCode] = useState('');
   const [activeBundle, setActiveBundle] = useState<EncryptedVaultBundle | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfileDoc | null>(null);
 
   // UI state
   const [errorMessage, setErrorMessage] = useState('');
@@ -64,24 +65,34 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
   const completeUnlockAndFinish = async (
     cleanEmail: string,
     pw: string,
-    bundle: EncryptedVaultBundle | null
+    bundle: EncryptedVaultBundle | null,
+    profile?: UserProfileDoc | null
   ) => {
     let finalKey: CryptoKey;
     let finalBundle: EncryptedVaultBundle;
     let finalItems: VaultItem[];
 
     if (!bundle) {
-      // First sign-in for this user or bundle not yet initialized in cloud
-      const initResult = await vaultStorage.initializeVault(pw, undefined, false);
-      finalKey = initResult.masterKey;
-      finalBundle = initResult.bundle;
+      if (profile?.salt && profile?.authHash) {
+        // User already has salt & authHash in Firestore profile!
+        // We MUST use their original salt to derive the key,
+        // so that existing credentials in users/{userId}/credentials can be decrypted!
+        const salt = profile.salt;
+        const authHash = profile.authHash;
+        finalKey = await deriveKey(pw, salt);
 
-      // Recover any individual credentials already stored in Firestore
-      const cloudItems = await firebaseService.fetchAccountCredentials(finalKey);
-      if (cloudItems.length > 0) {
+        // Fetch and decrypt individual credentials from Firestore
+        const cloudItems = await firebaseService.fetchAccountCredentials(finalKey);
         finalItems = cloudItems;
-        finalBundle = await vaultStorage.saveVault(finalItems, finalKey, finalBundle);
+
+        // Build and persist monolithic bundle to Firestore and local storage
+        finalBundle = await encryptVault(finalItems, finalKey, salt, authHash);
+        await vaultStorage.saveVault(finalItems, finalKey, finalBundle);
       } else {
+        // Brand new user with no previous profile or bundle
+        const initResult = await vaultStorage.initializeVault(pw, undefined, false);
+        finalKey = initResult.masterKey;
+        finalBundle = initResult.bundle;
         finalItems = initResult.items;
       }
     } else {
@@ -147,13 +158,28 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
       // Authenticate with Firebase Email/Password
       const user = await firebaseService.signInWithEmail(cleanEmail, password);
 
+      // Check user profile and 2FA configuration in Firestore
+      const profile = await firebaseService.getUserProfile(user.uid);
+      setUserProfile(profile);
+
       // Fetch existing vault bundle (cloud or local fallback)
       let bundle = await firebaseService.fetchFromCloud();
       if (!bundle) {
         bundle = await vaultStorage.getBundle();
       }
 
-      // If a vault bundle already exists, verify authHash against master password
+      // If bundle's salt does not match profile's salt, the local/cached bundle is stale or invalid!
+      if (bundle && profile?.salt && bundle.salt !== profile.salt) {
+        console.warn('Vault bundle salt mismatch with user profile. Discarding stale local bundle.');
+        bundle = null;
+        try {
+          localStorage.removeItem('cipher_matrix_vault_bundle');
+        } catch {
+          // Ignore
+        }
+      }
+
+      // If a valid vault bundle exists, verify authHash against master password
       if (bundle) {
         const hash120k = await deriveAuthHash(password, bundle.salt, 120_000);
         let validPassword = hash120k === bundle.authHash;
@@ -166,15 +192,8 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
           await firebaseService.signOutUser();
           throw new Error('ACCESS DENIED: Master password incorrect.');
         }
-      }
-
-      setActiveBundle(bundle);
-
-      // Check user 2FA configuration in Firestore
-      const profile = await firebaseService.getUserProfile(user.uid);
-
-      // If no bundle found yet, check if profile has authHash & salt to verify master password
-      if (!bundle && profile?.authHash && profile?.salt) {
+      } else if (profile?.authHash && profile?.salt) {
+        // If no bundle found yet, check if profile has authHash & salt to verify master password
         const hash120k = await deriveAuthHash(password, profile.salt, 120_000);
         let validPassword = hash120k === profile.authHash;
         if (!validPassword) {
@@ -187,6 +206,8 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
           throw new Error('ACCESS DENIED: Master password incorrect.');
         }
       }
+
+      setActiveBundle(bundle);
 
       if (profile?.totpEnabled && profile?.totpSecret) {
         // Returning user with 2FA already configured -> Prompt for 6-digit code
@@ -262,7 +283,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
       await firebaseService.saveUser2FA(totpSecret);
 
       // Complete vault unlock
-      await completeUnlockAndFinish(email.trim(), password, activeBundle);
+      await completeUnlockAndFinish(email.trim(), password, activeBundle, userProfile);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Verification failed';
       setErrorMessage(msg);
@@ -294,7 +315,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
       }
 
       // Complete vault unlock
-      await completeUnlockAndFinish(email.trim(), password, activeBundle);
+      await completeUnlockAndFinish(email.trim(), password, activeBundle, userProfile);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Verification failed';
       setErrorMessage(msg);
