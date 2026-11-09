@@ -44,9 +44,34 @@ export const App: React.FC = () => {
     itemsRef.current = items;
   }, [masterKey, vaultBundle, items]);
 
-  // Check initial configuration on mount & listen for extension confirmation
+  // Check initial configuration on mount, restore active tab session if available, & listen for extension events
   useEffect(() => {
     setIsFirebaseConnected(firebaseService.getStatus().isConfigured);
+
+    // Silently restore session within the same browser session so refreshes/resyncs never ask for login again
+    try {
+      const cached = sessionStorage.getItem('cipher_active_unlocked_session');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.bundle && Array.isArray(parsed.items)) {
+          setVaultBundle(parsed.bundle);
+          setItems(parsed.items);
+          setIsLocked(false);
+          // Broadcast presence & payload to extension
+          window.postMessage(
+            {
+              type: 'CIPHER_VAULT_SYNC_PAYLOAD',
+              bundle: parsed.bundle,
+              items: parsed.items,
+              accountEmail: parsed.email || firebaseService.getCurrentUser()?.email || undefined,
+            },
+            '*'
+          );
+        }
+      }
+    } catch {
+      // Ignore
+    }
 
     const handleExtensionMsg = (event: MessageEvent) => {
       if (event.data?.type === 'CIPHER_VAULT_SYNC_CONFIRMED' && event.data?.success) {
@@ -57,7 +82,7 @@ export const App: React.FC = () => {
         setTimeout(() => setExtensionSyncNotification(null), 5000);
       } else if (event.data?.type === 'CIPHER_VAULT_EXTENSION_DETECTED') {
         // Proactively push credentials to extension if already unlocked
-        if (masterKeyRef.current && vaultBundleRef.current) {
+        if (vaultBundleRef.current) {
           window.postMessage(
             {
               type: 'CIPHER_VAULT_SYNC_PAYLOAD',
@@ -67,6 +92,40 @@ export const App: React.FC = () => {
             },
             '*'
           );
+        }
+      } else if (event.data?.type === 'CIPHER_VAULT_TRIGGER_RESYNC') {
+        // Respond immediately to extension resync requests without asking user to log in
+        if (vaultBundleRef.current) {
+          window.postMessage(
+            {
+              type: 'CIPHER_VAULT_SYNC_PAYLOAD',
+              bundle: vaultBundleRef.current,
+              items: itemsRef.current,
+              accountEmail: firebaseService.getCurrentUser()?.email || undefined,
+            },
+            '*'
+          );
+        } else {
+          // Check cached session
+          try {
+            const cached = sessionStorage.getItem('cipher_active_unlocked_session');
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              if (parsed?.bundle) {
+                window.postMessage(
+                  {
+                    type: 'CIPHER_VAULT_SYNC_PAYLOAD',
+                    bundle: parsed.bundle,
+                    items: parsed.items || [],
+                    accountEmail: parsed.email || firebaseService.getCurrentUser()?.email || undefined,
+                  },
+                  '*'
+                );
+              }
+            }
+          } catch {
+            // Ignore
+          }
         }
       }
     };
@@ -80,6 +139,11 @@ export const App: React.FC = () => {
     setMasterKey(null);
     setItems([]);
     setIsLocked(true);
+    try {
+      sessionStorage.removeItem('cipher_active_unlocked_session');
+    } catch {
+      // Ignore
+    }
     // Sign out from Firebase Auth to ensure full lock
     try {
       await firebaseService.signOutUser();
@@ -94,6 +158,19 @@ export const App: React.FC = () => {
     setVaultBundle(bundle);
     setItems(unlockedItems);
     setIsLocked(false);
+
+    try {
+      sessionStorage.setItem(
+        'cipher_active_unlocked_session',
+        JSON.stringify({
+          bundle,
+          items: unlockedItems,
+          email: firebaseService.getCurrentUser()?.email || '',
+        })
+      );
+    } catch {
+      // Ignore
+    }
 
     // Auto-sync to browser extension if installed
     try {
@@ -129,6 +206,19 @@ export const App: React.FC = () => {
     const newBundle = await vaultStorage.saveVault(updatedItems, masterKey, vaultBundle);
     setVaultBundle(newBundle);
 
+    try {
+      sessionStorage.setItem(
+        'cipher_active_unlocked_session',
+        JSON.stringify({
+          bundle: newBundle,
+          items: updatedItems,
+          email: firebaseService.getCurrentUser()?.email || '',
+        })
+      );
+    } catch {
+      // Ignore
+    }
+
     // Auto-sync updated vault to browser extension
     try {
       window.postMessage(
@@ -156,6 +246,19 @@ export const App: React.FC = () => {
     setItems(updatedItems);
     const newBundle = await vaultStorage.saveVault(updatedItems, masterKey, vaultBundle);
     setVaultBundle(newBundle);
+
+    try {
+      sessionStorage.setItem(
+        'cipher_active_unlocked_session',
+        JSON.stringify({
+          bundle: newBundle,
+          items: updatedItems,
+          email: firebaseService.getCurrentUser()?.email || '',
+        })
+      );
+    } catch {
+      // Ignore
+    }
 
     // Auto-sync updated vault to browser extension
     try {

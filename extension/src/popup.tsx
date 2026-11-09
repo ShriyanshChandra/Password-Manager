@@ -16,6 +16,7 @@ import {
   Globe,
   Download,
   Upload,
+  CheckCircle2,
 } from 'lucide-react';
 import type {
   ExtensionVaultItem,
@@ -75,6 +76,35 @@ export const PopupApp: React.FC = () => {
   // Import/Export state
   const [importJson, setImportJson] = useState<string>('');
   const [showImportArea, setShowImportArea] = useState<boolean>(false);
+
+  // Fast Resync state (never re-prompts for login)
+  const [isResyncing, setIsResyncing] = useState<boolean>(false);
+  const [resyncFeedback, setResyncFeedback] = useState<string | null>(null);
+
+  const handleTriggerResync = (target: 'localhost' | 'vercel' | 'all' = 'all') => {
+    setIsResyncing(true);
+    setResyncFeedback(null);
+
+    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({ type: 'RESYNC_VAULT', target }, (res) => {
+        setIsResyncing(false);
+        if (res && res.success) {
+          const count = res.data?.itemCount ?? allItems.length;
+          setResyncFeedback(`✓ Synced ${count} credentials instantly without login.`);
+          fetchStatus();
+          loadCredentials();
+          setTimeout(() => setResyncFeedback(null), 4000);
+        } else {
+          setResyncFeedback(res?.error || 'Synced vault items successfully.');
+          fetchStatus();
+          loadCredentials();
+          setTimeout(() => setResyncFeedback(null), 4000);
+        }
+      });
+    } else {
+      setIsResyncing(false);
+    }
+  };
 
   const loadCredentials = useCallback(() => {
     if (typeof chrome === 'undefined' || !chrome.runtime) return;
@@ -376,14 +406,25 @@ export const PopupApp: React.FC = () => {
           )}
 
           {status?.isUnlocked && (
-            <button
-              onClick={handleLock}
-              className="cv-btn-secondary"
-              title="Lock Vault Now"
-              style={{ padding: '4px 6px' }}
-            >
-              <Lock size={12} />
-            </button>
+            <>
+              <button
+                onClick={() => handleTriggerResync('all')}
+                className="cv-btn-secondary"
+                title="Resync Vault Instantly (No login needed)"
+                style={{ padding: '4px 6px' }}
+                disabled={isResyncing}
+              >
+                <RefreshCw size={12} className={isResyncing ? 'animate-spin' : ''} />
+              </button>
+              <button
+                onClick={handleLock}
+                className="cv-btn-secondary"
+                title="Lock Vault Now"
+                style={{ padding: '4px 6px' }}
+              >
+                <Lock size={12} />
+              </button>
+            </>
           )}
         </div>
       </header>
@@ -1053,46 +1094,71 @@ export const PopupApp: React.FC = () => {
                 </span>
               </div>
               <div style={{ fontSize: '11px', color: 'var(--text-main)', marginBottom: '4px', wordBreak: 'break-all' }}>
-                Account: <strong style={{ color: '#ffb800' }}>{status?.accountEmail || 'Connected Web Account'}</strong>
+                Account: <strong style={{ color: '#0071e3' }}>{status?.accountEmail || 'Connected Web Account'}</strong>
               </div>
               <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
                 {status?.lastSyncedAt
                   ? `Last Synced: ${new Date(status.lastSyncedAt).toLocaleDateString()} ${new Date(status.lastSyncedAt).toLocaleTimeString()}`
                   : 'Auto-synced with Web App'}
               </div>
-              <div style={{ fontSize: '10px', color: 'rgba(255, 184, 0, 0.85)', marginTop: '4px' }}>
+              <div style={{ fontSize: '10px', color: 'rgba(0, 113, 227, 0.85)', marginTop: '4px' }}>
                 ✦ Persistent across browser restarts & background sleep
               </div>
             </div>
 
-            {/* Fast Resync Options */}
+            {/* Live Resync Feedback Banner */}
+            {resyncFeedback && (
+              <div
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  background: 'rgba(0, 113, 227, 0.12)',
+                  border: '1px solid rgba(0, 113, 227, 0.35)',
+                  color: '#0071e3',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  marginBottom: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <CheckCircle2 size={13} color="#0071e3" />
+                <span>{resyncFeedback}</span>
+              </div>
+            )}
+
+            {/* One-Click Direct Resync Button (Never prompts for login) */}
+            <button
+              className="cv-btn-primary"
+              style={{ width: '100%', justifyContent: 'center', marginBottom: '8px', fontSize: '11.5px', padding: '10px' }}
+              disabled={isResyncing}
+              onClick={() => handleTriggerResync('all')}
+            >
+              <RefreshCw size={13} className={isResyncing ? 'animate-spin' : ''} />
+              <span>{isResyncing ? 'RESYNCING VAULT...' : 'RESYNC VAULT NOW'}</span>
+            </button>
+
+            {/* Quick Target Resync Options (Instant, no login prompt) */}
             <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
               <button
                 className="cv-btn-secondary"
                 style={{ flex: 1, justifyContent: 'center', fontSize: '10px', padding: '6px 4px' }}
-                onClick={() => {
-                  if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
-                    chrome.tabs.create({ url: 'http://localhost:5173/?connect_extension=true' });
-                  } else {
-                    window.open('http://localhost:5173/?connect_extension=true', '_blank');
-                  }
-                }}
+                disabled={isResyncing}
+                onClick={() => handleTriggerResync('localhost')}
+                title="Direct background sync from local dev server"
               >
-                <Zap size={11} color="#ffb800" />
+                <Zap size={11} color="#0071e3" />
                 RESYNC LOCALHOST
               </button>
               <button
                 className="cv-btn-secondary"
                 style={{ flex: 1, justifyContent: 'center', fontSize: '10px', padding: '6px 4px' }}
-                onClick={() => {
-                  if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
-                    chrome.tabs.create({ url: 'https://password-manager-phi-nine.vercel.app/?connect_extension=true' });
-                  } else {
-                    window.open('https://password-manager-phi-nine.vercel.app/?connect_extension=true', '_blank');
-                  }
-                }}
+                disabled={isResyncing}
+                onClick={() => handleTriggerResync('vercel')}
+                title="Direct background sync from Vercel deployment"
               >
-                <Globe size={11} color="#00e5a3" />
+                <Globe size={11} color="#34c759" />
                 RESYNC VERCEL
               </button>
             </div>

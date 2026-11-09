@@ -365,6 +365,83 @@ chrome.runtime.onMessage.addListener((rawMessage, _sender, sendResponse) => {
         return { success: true, data: { tabId: createdTab.id, url: targetUrl } };
       }
 
+      case 'RESYNC_VAULT': {
+        const target = (message as { target?: string }).target;
+
+        let urlFilters = ['*://localhost/*', '*://127.0.0.1/*', 'https://*.vercel.app/*'];
+        if (target === 'localhost') {
+          urlFilters = ['*://localhost/*', '*://127.0.0.1/*'];
+        } else if (target === 'vercel') {
+          urlFilters = ['https://*.vercel.app/*'];
+        }
+
+        let syncedItemsCount: number | null = null;
+        let syncedEmail: string | undefined = undefined;
+
+        try {
+          const candidateTabs = await chrome.tabs.query({ url: urlFilters });
+          if (candidateTabs && candidateTabs.length > 0) {
+            for (const tab of candidateTabs) {
+              if (tab.id) {
+                try {
+                  const res = await new Promise<{ success: boolean; itemCount?: number; accountEmail?: string } | null>((resolve) => {
+                    chrome.tabs.sendMessage(tab.id!, { type: 'REQUEST_VAULT_RESYNC' }, (resp) => {
+                      if (chrome.runtime.lastError || !resp) {
+                        resolve(null);
+                      } else {
+                        resolve(resp);
+                      }
+                    });
+                  });
+
+                  if (res && res.success) {
+                    syncedItemsCount = res.itemCount ?? 0;
+                    syncedEmail = res.accountEmail;
+                    break;
+                  }
+                } catch {
+                  // Tab not reachable
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('Error querying tabs during RESYNC_VAULT:', err);
+        }
+
+        // 2. If no tab supplied new items, refresh from persistent storage
+        if (syncedItemsCount === null) {
+          const persistent = await ExtensionStorageService.loadPersistentItems();
+          if (persistent !== null) {
+            await setSessionItems(persistent);
+            syncedItemsCount = persistent.length;
+            const account = await ExtensionStorageService.loadConnectedAccount();
+            syncedEmail = account?.email;
+          } else {
+            syncedItemsCount = decryptedVaultItems ? decryptedVaultItems.length : 0;
+          }
+        }
+
+        // Update connected account sync time and refresh badge
+        const currentAccount = await ExtensionStorageService.loadConnectedAccount();
+        const updatedEmail = syncedEmail || currentAccount?.email || 'Connected Account';
+        await ExtensionStorageService.saveConnectedAccount({
+          email: updatedEmail,
+          lastSync: Date.now(),
+        });
+        await updateTabBadge();
+        notifyActiveTabVaultUnlocked().catch(() => {});
+
+        return {
+          success: true,
+          data: {
+            itemCount: syncedItemsCount,
+            lastSyncedAt: Date.now(),
+            accountEmail: updatedEmail,
+          },
+        };
+      }
+
       case 'SYNC_FROM_WEBAPP': {
         const { bundle, items, accountEmail } = message;
         if (!bundle || !bundle.salt || !bundle.authHash) {

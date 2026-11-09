@@ -63,6 +63,7 @@ export type ExtensionMessage =
   | { type: 'SAVE_CREDENTIAL'; item: ExtensionVaultItem }
   | { type: 'UPDATE_VAULT_BUNDLE'; bundle: EncryptedVaultBundle }
   | { type: 'SYNC_FROM_WEBAPP'; bundle: EncryptedVaultBundle; items?: ExtensionVaultItem[]; accountEmail?: string }
+  | { type: 'RESYNC_VAULT'; target?: 'localhost' | 'vercel' | 'all' }
   | { type: 'OPEN_CONNECT_TAB'; target?: 'local' | 'prod' }
   | { type: 'AUTOFILL_TAB'; tabId?: number; credentials: AutoFillPayload }
   | { type: 'CHECK_PAGE_FIELDS' }

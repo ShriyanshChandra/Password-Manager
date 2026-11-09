@@ -505,6 +505,42 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       hasPasswordField: passwordInput !== null,
       usernameFound: usernameInput !== null,
     });
+  } else if (message.type === 'REQUEST_VAULT_RESYNC') {
+    if (isCipherVaultWebApp) {
+      let resolved = false;
+      const resyncListener = (event: MessageEvent) => {
+        if (event.source !== window || !event.data) return;
+        if (event.data.type === 'CIPHER_VAULT_SYNC_PAYLOAD') {
+          window.removeEventListener('message', resyncListener);
+          resolved = true;
+          const { bundle, items, accountEmail } = event.data;
+          chrome.runtime.sendMessage(
+            { type: 'SYNC_FROM_WEBAPP', bundle, items, accountEmail },
+            (bgRes) => {
+              sendResponse({
+                success: bgRes?.success || false,
+                itemCount: bgRes?.data?.itemCount ?? (items ? items.length : 0),
+                accountEmail: bgRes?.data?.accountEmail || accountEmail,
+              });
+            }
+          );
+        }
+      };
+
+      window.addEventListener('message', resyncListener);
+      window.postMessage({ type: 'CIPHER_VAULT_TRIGGER_RESYNC' }, '*');
+
+      setTimeout(() => {
+        if (!resolved) {
+          window.removeEventListener('message', resyncListener);
+          sendResponse({ success: false, error: 'Web vault tab did not return credentials.' });
+        }
+      }, 1500);
+
+      return true; // Keep message channel open for async response
+    } else {
+      sendResponse({ success: false, error: 'Not a CIPHER//VAULT web tab.' });
+    }
   }
 });
 

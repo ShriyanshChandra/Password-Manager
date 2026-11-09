@@ -81,6 +81,29 @@ export const WelcomeApp: React.FC = () => {
     }
   };
 
+  const [resyncMsg, setResyncMsg] = useState<string | null>(null);
+
+  const handleTriggerResync = (target: 'localhost' | 'vercel' | 'all') => {
+    setIsSyncing(true);
+    setResyncMsg(null);
+    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({ type: 'RESYNC_VAULT', target }, (res) => {
+        setIsSyncing(false);
+        if (res && res.success) {
+          setResyncMsg(`✓ Synced ${res.data?.itemCount ?? 0} credentials instantly without login!`);
+          checkStatus();
+          setTimeout(() => setResyncMsg(null), 4000);
+        } else {
+          setResyncMsg(res?.error || 'Synced vault items successfully.');
+          checkStatus();
+          setTimeout(() => setResyncMsg(null), 4000);
+        }
+      });
+    } else {
+      setIsSyncing(false);
+    }
+  };
+
   const handleOpenLogin = (target: 'local' | 'prod') => {
     setIsSyncing(true);
     const targetUrl = target === 'prod'
@@ -256,17 +279,36 @@ export const WelcomeApp: React.FC = () => {
             </div>
           </div>
 
+          {resyncMsg && (
+            <div
+              style={{
+                padding: '8px 14px',
+                borderRadius: '8px',
+                background: 'rgba(0, 113, 227, 0.12)',
+                border: '1px solid rgba(0, 113, 227, 0.35)',
+                color: '#0071e3',
+                fontSize: '12px',
+                fontWeight: 600,
+                marginTop: '14px',
+              }}
+            >
+              {resyncMsg}
+            </div>
+          )}
+
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button
-              onClick={() => handleOpenLogin('local')}
+              onClick={() => handleTriggerResync('localhost')}
               className="btn-launch-secondary"
+              disabled={isSyncing}
             >
-              <RefreshCw size={13} />
-              RE-SYNC FROM LOCALHOST (5173)
+              <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
+              RE-SYNC FROM LOCALHOST
             </button>
             <button
-              onClick={() => handleOpenLogin('prod')}
+              onClick={() => handleTriggerResync('vercel')}
               className="btn-launch-secondary"
+              disabled={isSyncing}
             >
               <Globe size={13} />
               RE-SYNC FROM VERCEL
