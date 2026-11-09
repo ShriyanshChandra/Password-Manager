@@ -539,7 +539,9 @@ observer.observe(document.body || document.documentElement, {
 const isCipherVaultWebApp =
   window.location.hostname === 'localhost' ||
   window.location.hostname === '127.0.0.1' ||
-  window.location.hostname.includes('password-manager-phi-nine.vercel.app');
+  window.location.hostname.endsWith('.vercel.app') ||
+  window.location.hostname.includes('password-manager') ||
+  document.title.includes('CIPHER//VAULT');
 
 if (isCipherVaultWebApp) {
   // Announce extension presence to the web app

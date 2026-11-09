@@ -174,7 +174,23 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
         setIsLoading(false);
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Authentication failed';
+      let msg = 'Authentication failed';
+      if (err && typeof err === 'object') {
+        const anyErr = err as { code?: string; message?: string };
+        if (anyErr.code === 'auth/invalid-credential' || anyErr.code === 'auth/wrong-password') {
+          msg = 'ACCESS DENIED: Incorrect email or master password.';
+        } else if (anyErr.code === 'auth/user-not-found') {
+          msg = 'No account found with this email. Please verify or register.';
+        } else if (anyErr.code === 'auth/network-request-failed') {
+          msg = 'Network error: Unable to reach authentication server. Please check your connection.';
+        } else if (anyErr.code === 'auth/too-many-requests') {
+          msg = 'Too many attempts. Access temporarily locked for security. Please try again shortly.';
+        } else if (anyErr.message) {
+          msg = anyErr.message;
+        }
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
       setErrorMessage(msg);
       cyberAudio.playErrorSound();
       setIsBreach(true);
@@ -385,7 +401,7 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
                     textTransform: 'uppercase',
                   }}
                 >
-                  {isBreach ? 'Access Denied' : 'Apple Liquid Glass // Zero-Knowledge'}
+                  {isBreach ? 'Access Denied' : 'Zero-Knowledge Security'}
                 </span>
               </div>
 

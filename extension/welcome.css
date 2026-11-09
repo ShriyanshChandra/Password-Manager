@@ -1,18 +1,18 @@
 :root {
-  --bg-primary: #0a0418;
-  --bg-secondary: #100825;
-  --bg-card: rgba(22, 10, 48, 0.75);
-  --border-color: rgba(255, 184, 0, 0.22);
-  --border-focus: #ffb800;
-  --gold-primary: #ffb800;
-  --gold-glow: rgba(255, 184, 0, 0.4);
-  --orange-primary: #e85c00;
-  --crimson: #cc2200;
-  --text-main: #f3ecff;
-  --text-muted: #9f8ebd;
-  --text-highlight: #ffcf40;
-  --font-mono: 'JetBrains Mono', 'Share Tech Mono', monospace;
-  --font-display: 'Orbitron', sans-serif;
+  --bg-primary: #0a0b10;
+  --bg-secondary: #121526;
+  --bg-card: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.16);
+  --border-focus: #0071e3;
+  --gold-primary: #0071e3;
+  --gold-glow: rgba(0, 113, 227, 0.35);
+  --orange-primary: #0a84ff;
+  --crimson: #ff3b30;
+  --text-main: #f5f5f7;
+  --text-muted: #86868b;
+  --text-highlight: #0071e3;
+  --font-mono: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
 }
 
 * {
@@ -25,9 +25,9 @@ body {
   min-height: 100vh;
   background-color: var(--bg-primary);
   background-image: 
-    radial-gradient(circle at 15% 15%, rgba(232, 92, 0, 0.18) 0%, transparent 45%),
-    radial-gradient(circle at 85% 85%, rgba(255, 184, 0, 0.15) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(13, 5, 32, 0.9) 0%, #0a0418 100%);
+    radial-gradient(circle at 15% 15%, rgba(0, 113, 227, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(88, 86, 214, 0.10) 0%, transparent 45%),
+    linear-gradient(180deg, #10121d 0%, #0a0b10 100%);
   color: var(--text-main);
   font-family: var(--font-mono);
   font-size: 14px;
@@ -60,29 +60,27 @@ body {
 .welcome-brand-icon {
   width: 44px;
   height: 44px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--gold-primary), var(--orange-primary));
+  border-radius: 12px;
+  background: linear-gradient(180deg, #0077ed 0%, #0071e3 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px var(--gold-glow);
-  color: #100825;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.35);
+  color: #ffffff;
 }
 
 .welcome-brand-title {
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 800;
-  letter-spacing: 2px;
-  background: linear-gradient(90deg, #ffb800 0%, #ff7700 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+  color: #f5f5f7;
 }
 
 .welcome-brand-tagline {
   font-size: 11px;
   color: var(--text-muted);
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   margin-top: 2px;
 }
 
@@ -90,18 +88,18 @@ body {
 .welcome-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 32px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 24px rgba(255, 184, 0, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   margin-bottom: 24px;
   transition: all 0.3s ease;
 }
 
 .welcome-card:hover {
-  border-color: rgba(255, 184, 0, 0.45);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 32px rgba(255, 184, 0, 0.15);
+  border-color: rgba(0, 113, 227, 0.4);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 113, 227, 0.15);
 }
 
 /* Action Buttons */
@@ -110,23 +108,24 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 14px 28px;
-  background: linear-gradient(135deg, #ffb800 0%, #e85c00 100%);
+  padding: 13px 26px;
+  background: linear-gradient(180deg, #0077ed 0%, #0071e3 100%);
   border: none;
-  border-radius: 8px;
-  color: #100825;
+  border-radius: 9999px;
+  color: #ffffff;
   font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13.5px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 0 20px var(--gold-glow);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
 }
 
 .btn-launch-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(255, 184, 0, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.55);
+  background: linear-gradient(180deg, #007ced 0%, #0077ed 100%);
 }
 
 .btn-launch-secondary {
@@ -135,20 +134,21 @@ body {
   justify-content: center;
   gap: 8px;
   padding: 12px 22px;
-  background: rgba(255, 184, 0, 0.08);
-  border: 1px solid rgba(255, 184, 0, 0.35);
-  border-radius: 8px;
-  color: var(--gold-primary);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  color: #f5f5f7;
   font-family: var(--font-mono);
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .btn-launch-secondary:hover {
-  background: rgba(255, 184, 0, 0.18);
-  border-color: var(--gold-primary);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
 }
 
@@ -157,21 +157,21 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 16px;
+  padding: 8px 16px;
   border-radius: 30px;
-  background: rgba(255, 184, 0, 0.08);
-  border: 1px solid rgba(255, 184, 0, 0.25);
+  background: rgba(0, 113, 227, 0.1);
+  border: 1px solid rgba(0, 113, 227, 0.25);
   font-size: 12px;
-  color: var(--gold-primary);
+  color: #0a84ff;
   width: fit-content;
 }
 
 .pulse-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #ffb800;
-  box-shadow: 0 0 10px #ffb800;
+  background: #0071e3;
+  box-shadow: 0 0 8px #0071e3;
   animation: pulseAnim 1.6s infinite ease-in-out;
 }
 
@@ -190,10 +190,15 @@ body {
 }
 
 .feature-box {
-  background: rgba(16, 8, 37, 0.6);
-  border: 1px solid rgba(255, 184, 0, 0.18);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
   padding: 18px;
+  transition: border-color 0.2s;
+}
+
+.feature-box:hover {
+  border-color: rgba(0, 113, 227, 0.35);
 }
 
 .feature-box-title {
@@ -202,7 +207,7 @@ body {
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--gold-primary);
+  color: #0a84ff;
   margin-bottom: 6px;
 }
 
@@ -211,4 +216,3 @@ body {
   color: var(--text-muted);
   line-height: 1.5;
 }
-

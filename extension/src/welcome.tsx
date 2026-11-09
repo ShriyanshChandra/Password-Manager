@@ -85,7 +85,9 @@ export const WelcomeApp: React.FC = () => {
     setIsSyncing(true);
     const targetUrl = target === 'prod'
       ? 'https://password-manager-phi-nine.vercel.app/?connect_extension=true'
-      : 'http://localhost:5173/?connect_extension=true';
+      : (window.location.port === '5173'
+          ? 'http://localhost:5173/?connect_extension=true'
+          : 'http://localhost:5174/?connect_extension=true');
 
     if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
       chrome.tabs.create({ url: targetUrl });

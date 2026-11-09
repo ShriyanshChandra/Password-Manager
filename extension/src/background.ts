@@ -357,9 +357,10 @@ chrome.runtime.onMessage.addListener((rawMessage, _sender, sendResponse) => {
       }
 
       case 'OPEN_CONNECT_TAB': {
+        const localPort = (message as { port?: number | string }).port || '5174';
         const targetUrl = message.target === 'prod'
           ? 'https://password-manager-phi-nine.vercel.app/?connect_extension=true'
-          : 'http://localhost:5173/?connect_extension=true';
+          : `http://localhost:${localPort}/?connect_extension=true`;
         const createdTab = await chrome.tabs.create({ url: targetUrl });
         return { success: true, data: { tabId: createdTab.id, url: targetUrl } };
       }

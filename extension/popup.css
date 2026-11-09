@@ -1,19 +1,19 @@
 /* CIPHER//VAULT Extension Popup Theme */
 :root {
-  --bg-primary: #0d0520;
-  --bg-secondary: #130a2a;
-  --bg-card: rgba(26, 12, 54, 0.7);
-  --border-color: rgba(255, 184, 0, 0.25);
-  --border-focus: #ffb800;
-  --gold-primary: #ffb800;
-  --gold-glow: rgba(255, 184, 0, 0.38);
-  --orange-primary: #e85c00;
-  --crimson: #cc2200;
-  --text-main: #f0eafc;
-  --text-muted: #9f92bd;
-  --text-highlight: #ffcf40;
-  --font-mono: 'JetBrains Mono', 'Share Tech Mono', monospace;
-  --font-display: 'Orbitron', sans-serif;
+  --bg-primary: #0a0b10;
+  --bg-secondary: #121526;
+  --bg-card: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.16);
+  --border-focus: #0071e3;
+  --gold-primary: #0071e3;
+  --gold-glow: rgba(0, 113, 227, 0.35);
+  --orange-primary: #0a84ff;
+  --crimson: #ff3b30;
+  --text-main: #f5f5f7;
+  --text-muted: #86868b;
+  --text-highlight: #0071e3;
+  --font-mono: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
 }
 
 * {
@@ -27,9 +27,9 @@ body {
   height: 560px;
   background-color: var(--bg-primary);
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(232, 92, 0, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(255, 184, 0, 0.12) 0%, transparent 40%),
-    linear-gradient(180deg, #100825 0%, #0d0520 100%);
+    radial-gradient(circle at 10% 20%, rgba(0, 113, 227, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(88, 86, 214, 0.10) 0%, transparent 40%),
+    linear-gradient(180deg, #10121d 0%, #0a0b10 100%);
   color: var(--text-main);
   font-family: var(--font-mono);
   font-size: 13px;
@@ -43,10 +43,10 @@ body {
   width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d0520;
+  background: #0a0b10;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 184, 0, 0.3);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -56,8 +56,8 @@ body {
 /* Header */
 .cv-header {
   padding: 12px 14px;
-  background: rgba(16, 8, 37, 0.85);
-  backdrop-filter: blur(10px);
+  background: rgba(18, 21, 38, 0.85);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -76,32 +76,30 @@ body {
 .cv-logo-icon {
   width: 24px;
   height: 24px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, var(--gold-primary), var(--orange-primary));
+  border-radius: 6px;
+  background: linear-gradient(180deg, #0077ed 0%, #0071e3 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 10px var(--gold-glow);
-  color: #100825;
+  color: #ffffff;
 }
 
 .cv-logo-title {
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 1px;
-  background: linear-gradient(90deg, #ffb800, #ff8800);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+  color: #f5f5f7;
 }
 
 .cv-domain-pill {
   font-size: 11px;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 12px;
-  background: rgba(255, 184, 0, 0.1);
-  border: 1px solid rgba(255, 184, 0, 0.3);
-  color: var(--gold-primary);
+  background: rgba(0, 113, 227, 0.12);
+  border: 1px solid rgba(0, 113, 227, 0.3);
+  color: #0a84ff;
   max-width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -112,7 +110,7 @@ body {
 .cv-nav {
   display: flex;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(13, 5, 32, 0.6);
+  background: rgba(10, 11, 16, 0.7);
 }
 
 .cv-nav-btn {
@@ -134,13 +132,13 @@ body {
 
 .cv-nav-btn:hover {
   color: var(--text-main);
-  background: rgba(255, 184, 0, 0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .cv-nav-btn.active {
   color: var(--gold-primary);
   border-bottom-color: var(--gold-primary);
-  background: rgba(255, 184, 0, 0.08);
+  background: rgba(0, 113, 227, 0.1);
 }
 
 /* Main Container */

@@ -99,4 +99,4 @@ This document outlines architectural mandates, security protocols, and operation
 ---
 
 ## 6. Core Agent Operational Rules
-1. **DOM Access Directive**: Never use DOM until specified in the prompt.
+<!--1. **DOM Access Directive**: Never use DOM until specified in the prompt.-->

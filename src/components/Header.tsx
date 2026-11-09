@@ -96,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
                 textTransform: 'uppercase',
               }}
             >
-              Apple Liquid Glass // Zero-Knowledge
+              Zero-Knowledge // Encrypted Vault
             </div>
           </div>
         </div>
