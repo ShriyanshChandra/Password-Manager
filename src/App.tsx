@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   // Preferences & Appearance
   const [crtActive, setCrtActive] = useState<boolean>(true);
   const [soundMuted, setSoundMuted] = useState<boolean>(false);
-  const [isFirebaseConnected, setIsFirebaseConnected] = useState<boolean>(true);
+  const [isFirebaseConnected, setIsFirebaseConnected] = useState<boolean>(() => firebaseService.getStatus().isConfigured);
   const [extensionSyncNotification, setExtensionSyncNotification] = useState<string | null>(null);
 
   const masterKeyRef = useRef<CryptoKey | null>(null);
@@ -46,7 +46,6 @@ export const App: React.FC = () => {
 
   // Check initial configuration on mount, restore active tab session if available, & listen for extension events
   useEffect(() => {
-    setIsFirebaseConnected(firebaseService.getStatus().isConfigured);
     const unsub = firebaseService.onAuthChange((user) => {
       setIsFirebaseConnected(!!user && firebaseService.getStatus().isConfigured);
     });

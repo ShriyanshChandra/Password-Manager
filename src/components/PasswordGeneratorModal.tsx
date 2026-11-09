@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, RefreshCw, Copy, Check, ShieldCheck, Sliders } from 'lucide-react';
 import type { PasswordGeneratorOptions } from '../types/vault';
 import { generatePassword, evaluatePasswordStrength } from '../crypto/passwordUtils';
@@ -32,18 +32,18 @@ export const PasswordGeneratorModal: React.FC<PasswordGeneratorModalProps> = ({
   const [generatedPassword, setGeneratedPassword] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const regenerate = () => {
+  const regenerate = useCallback(() => {
     cyberAudio.playKeypress();
     const pwd = generatePassword(options);
     setGeneratedPassword(pwd);
-  };
+  }, [options]);
 
   useEffect(() => {
     if (isOpen) {
       regenerate();
       setCopied(false);
     }
-  }, [isOpen, options]);
+  }, [isOpen, regenerate]);
 
   if (!isOpen) return null;
 
