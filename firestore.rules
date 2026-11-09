@@ -51,7 +51,9 @@ service cloud.firestore {
         && data.authHash is string && data.authHash.size() <= 128
         && data.iv is string && data.iv.size() <= 64
         && data.ciphertext is string && data.ciphertext.size() <= 1048576
-        && data.updatedAt is number;
+        && data.updatedAt is number
+        && (!('hint' in data) || (data.hint is string && data.hint.size() <= 200))
+        && (!('lastSyncedAt' in data) || data.lastSyncedAt is number);
     }
 
     // User login profile and account document

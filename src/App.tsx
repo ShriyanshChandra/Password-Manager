@@ -47,6 +47,9 @@ export const App: React.FC = () => {
   // Check initial configuration on mount, restore active tab session if available, & listen for extension events
   useEffect(() => {
     setIsFirebaseConnected(firebaseService.getStatus().isConfigured);
+    const unsub = firebaseService.onAuthChange((user) => {
+      setIsFirebaseConnected(!!user && firebaseService.getStatus().isConfigured);
+    });
 
     // Silently restore session within the same browser session so refreshes/resyncs never ask for login again
     try {
@@ -130,7 +133,10 @@ export const App: React.FC = () => {
       }
     };
     window.addEventListener('message', handleExtensionMsg);
-    return () => window.removeEventListener('message', handleExtensionMsg);
+    return () => {
+      unsub();
+      window.removeEventListener('message', handleExtensionMsg);
+    };
   }, []);
 
   // Lock Vault Action

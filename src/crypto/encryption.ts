@@ -125,15 +125,20 @@ export async function encryptVault(
     rawData
   );
 
-  return {
+  const bundle: EncryptedVaultBundle = {
     version: 1,
     salt: saltBase64,
     authHash,
     iv: bufferToBase64(iv),
     ciphertext: bufferToBase64(ciphertextBuffer),
-    hint,
     updatedAt: Date.now(),
   };
+
+  if (hint && typeof hint === 'string' && hint.trim().length > 0) {
+    bundle.hint = hint.trim();
+  }
+
+  return bundle;
 }
 
 // Decrypt encrypted bundle back to vault items

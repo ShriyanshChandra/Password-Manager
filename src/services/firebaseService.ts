@@ -211,10 +211,20 @@ export class FirebaseService {
 
       const vaultDocRef = doc(this.db, 'vaults', user.uid);
 
-      await setDoc(vaultDocRef, {
-        ...bundle,
+      const payload: Record<string, unknown> = {
+        version: bundle.version,
+        salt: bundle.salt,
+        authHash: bundle.authHash,
+        iv: bundle.iv,
+        ciphertext: bundle.ciphertext,
+        updatedAt: bundle.updatedAt || Date.now(),
         lastSyncedAt: Date.now(),
-      });
+      };
+      if (bundle.hint && typeof bundle.hint === 'string' && bundle.hint.trim().length > 0) {
+        payload.hint = bundle.hint.trim();
+      }
+
+      await setDoc(vaultDocRef, payload);
 
       return true;
     } catch (err) {

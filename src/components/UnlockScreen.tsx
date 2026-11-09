@@ -72,19 +72,45 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
     let finalItems: VaultItem[];
 
     if (!bundle) {
-      // First sign-in for this user, initialize vault with empty items
+      // First sign-in for this user or bundle not yet initialized in cloud
       const initResult = await vaultStorage.initializeVault(pw, undefined, false);
       finalKey = initResult.masterKey;
       finalBundle = initResult.bundle;
-      finalItems = initResult.items;
+
+      // Recover any individual credentials already stored in Firestore
+      const cloudItems = await firebaseService.fetchAccountCredentials(finalKey);
+      if (cloudItems.length > 0) {
+        finalItems = cloudItems;
+        finalBundle = await vaultStorage.saveVault(finalItems, finalKey, finalBundle);
+      } else {
+        finalItems = initResult.items;
+      }
     } else {
-      // Unlock with Master Password
-      const unlocked = await vaultStorage.unlockVault(pw);
+      // Unlock with Master Password, passing the active bundle
+      const unlocked = await vaultStorage.unlockVault(pw, bundle);
       finalKey = unlocked.masterKey;
       finalBundle = unlocked.bundle;
+
       // Fetch per-account cloud credentials
       const cloudItems = await firebaseService.fetchAccountCredentials(finalKey);
-      finalItems = cloudItems.length > 0 ? cloudItems : unlocked.items;
+
+      // Merge items by ID, preserving the latest updated version of each credential
+      const itemMap = new Map<string, VaultItem>();
+      for (const it of unlocked.items) {
+        itemMap.set(it.id, it);
+      }
+      for (const it of cloudItems) {
+        const existing = itemMap.get(it.id);
+        if (!existing || (it.updatedAt || 0) >= (existing.updatedAt || 0)) {
+          itemMap.set(it.id, it);
+        }
+      }
+      finalItems = Array.from(itemMap.values());
+
+      // If cloud items had credentials not in the bundle, persist the unified bundle
+      if (finalItems.length !== unlocked.items.length) {
+        finalBundle = await vaultStorage.saveVault(finalItems, finalKey, finalBundle);
+      }
     }
 
     // Record login in Firestore
@@ -147,6 +173,21 @@ export const UnlockScreen: React.FC<UnlockScreenProps> = ({
 
       // Check user 2FA configuration in Firestore
       const profile = await firebaseService.getUserProfile(user.uid);
+
+      // If no bundle found yet, check if profile has authHash & salt to verify master password
+      if (!bundle && profile?.authHash && profile?.salt) {
+        const hash120k = await deriveAuthHash(password, profile.salt, 120_000);
+        let validPassword = hash120k === profile.authHash;
+        if (!validPassword) {
+          const hash20k = await deriveAuthHash(password, profile.salt, 20_000);
+          validPassword = hash20k === profile.authHash;
+        }
+
+        if (!validPassword) {
+          await firebaseService.signOutUser();
+          throw new Error('ACCESS DENIED: Master password incorrect.');
+        }
+      }
 
       if (profile?.totpEnabled && profile?.totpSecret) {
         // Returning user with 2FA already configured -> Prompt for 6-digit code

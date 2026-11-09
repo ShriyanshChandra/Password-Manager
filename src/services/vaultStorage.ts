@@ -68,12 +68,15 @@ export class VaultStorageService {
   }
 
   // Unlock existing vault
-  public async unlockVault(masterPassword: string): Promise<{
+  public async unlockVault(
+    masterPassword: string,
+    existingBundle?: EncryptedVaultBundle | null
+  ): Promise<{
     masterKey: CryptoKey;
     bundle: EncryptedVaultBundle;
     items: VaultItem[];
   }> {
-    const bundle = await this.getBundle();
+    const bundle = existingBundle || (await this.getBundle());
     if (!bundle) {
       throw new Error('No vault found. Please create a new vault first.');
     }
